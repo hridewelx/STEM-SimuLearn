@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Synthesis Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 Speech Synthesis Test</h1>
+    
+    <div class="status" id="status">
+        Checking browser support...
+    </div>
+
+    <div>
+        <button onclick="testSimpleSpeech()">Test Simple Speech</button>
+        <button onclick="testWithMarkdown()">Test with Markdown</button>
+        <button onclick="stopSpeech()">Stop Speech</button>
+    </div>
+
+    <div>
+        <h3>Console Log:</h3>
+        <div id="log" style="background: #1f2937; color: #10b981; padding: 10px; border-radius: 5px; font-family: monospace; min-height: 200px; overflow-y: auto;">
+        </div>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ef4444' : type === 'success' ? '#22c55e' : '#60a5fa';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Check browser support
+        if ('speechSynthesis' in window) {
+            statusDiv.innerHTML = '<span class="success">✅ Speech Synthesis is supported in your browser!</span>';
+            log('✅ Speech Synthesis API available', 'success');
+            
+            // Log available voices
+            setTimeout(() => {
+                const voices = window.speechSynthesis.getVoices();
+                log(`📢 Available voices: ${voices.length}`, 'info');
+                voices.slice(0, 3).forEach(voice => {
+                    log(`  - ${voice.name} (${voice.lang})`, 'info');
+                });
+            }, 100);
+        } else {
+            statusDiv.innerHTML = '<span class="error">❌ Speech Synthesis is NOT supported in your browser!</span>';
+            log('❌ Speech Synthesis API not available', 'error');
+        }
+
+        function testSimpleSpeech() {
+            log('🎤 Testing simple speech...', 'info');
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance('Hello! This is a simple speech test.');
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            utterance.onstart = () => log('🎙️ Speech started!', 'success');
+            utterance.onend = () => log('✅ Speech ended normally', 'success');
+            utterance.onerror = (e) => log(`❌ Speech error: ${e.error}`, 'error');
+            
+            window.speechSynthesis.speak(utterance);
+            log('🚀 speechSynthesis.speak() called', 'info');
+        }
+
+        function testWithMarkdown() {
+            log('🎤 Testing speech with markdown text...', 'info');
+            window.speechSynthesis.cancel();
+            
+            const markdownText = "Welcome! That's a **super question** to get us started! 👋 This simulation is a *fantastic* way to visualize how tiny gas particles behave.";
+            
+            // Strip markdown
+            const cleanText = markdownText
+                .replace(/\*\*(.*?)\*\*/g, '$1')
+                .replace(/\*(.*?)\*/g, '$1')
+                .trim();
+            
+            log(`📝 Original: ${markdownText.substring(0, 50)}...`, 'info');
+            log(`📝 Cleaned: ${cleanText.substring(0, 50)}...`, 'info');
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 0.9;
+            
+            utterance.onstart = () => log('🎙️ Speech started!', 'success');
+            utterance.onend = () => log('✅ Speech ended normally', 'success');
+            utterance.onerror = (e) => log(`❌ Speech error: ${e.error}`, 'error');
+            
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+                log('🚀 speechSynthesis.speak() called', 'info');
+            }, 100);
+        }
+
+        function stopSpeech() {
+            log('🛑 Stopping speech...', 'info');
+            window.speechSynthesis.cancel();
+        }
+    </script>
+</body>
+</html>
