@@ -1,8 +1,12 @@
 import { SimulationConfig } from '../types/simulationTypes';
 import { Atom } from 'lucide-react';
+import { convexLensConfig } from './ConvexLens/config';
+import { concaveMirrorConfig } from './ConcaveMirror/config';
 
-// Physics simulations will be added here
+// Physics simulations
 export const physicsSimulations: SimulationConfig[] = [
+  convexLensConfig,
+  concaveMirrorConfig,
   // projectileMotionConfig,
   // pendulumConfig,
   // circularMotionConfig,
@@ -25,5 +29,11 @@ export const projectileMotionPlaceholder: SimulationConfig = {
   ],
   tags: ['mechanics', 'kinematics', 'gravity', 'projectile'],
   route: '/simulations/physics/projectile-motion',
-  icon: Atom
+  icon: Atom,
+  simulationDetails: {
+    howItWorks: 'Coming soon',
+    keyConcepts: ['Coming soon'],
+    controls: ['Coming soon'],
+    proTip: 'Coming soon'
+  }
 };
