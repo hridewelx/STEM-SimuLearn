@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConcaveMirrorParams } from './types';
 
 interface ConcaveMirrorCanvasProps {
@@ -7,6 +7,7 @@ interface ConcaveMirrorCanvasProps {
 
 const ConcaveMirrorCanvas: React.FC<ConcaveMirrorCanvasProps> = ({ params }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,7 +30,7 @@ const ConcaveMirrorCanvas: React.FC<ConcaveMirrorCanvasProps> = ({ params }) => 
     const viewRange = 4 * PC; // Total range to display: 4PC
     
     // Dynamic scale factor: canvas width represents 4PC in cm
-    const scale = canvas.width / viewRange; // pixels per cm
+    const scale = (canvas.width / viewRange) * zoomLevel; // pixels per cm with zoom
 
     // Draw principal axis
     ctx.strokeStyle = '#4B5563';
@@ -313,7 +314,23 @@ const ConcaveMirrorCanvas: React.FC<ConcaveMirrorCanvasProps> = ({ params }) => 
       ctx.fillText(`f = ${params.focalLength} cm`, (focalX + mirrorPoleX) / 2 - 20, centerY + 75);
     }
 
-  }, [params]);
+  }, [params, zoomLevel]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoomLevel(prev => {
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        return Math.max(0.5, Math.min(3, prev * delta));
+      });
+    };
+
+    canvas.addEventListener('wheel', handleWheel);
+    return () => canvas.removeEventListener('wheel', handleWheel);
+  }, []);
 
   return (
     <canvas

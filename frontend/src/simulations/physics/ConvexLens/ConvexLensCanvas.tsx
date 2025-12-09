@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { ConvexLensParams } from './types';
 
 interface ConvexLensCanvasProps {
@@ -7,6 +7,7 @@ interface ConvexLensCanvasProps {
 
 const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,8 +36,8 @@ const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
     const maxObjectOrImage = Math.max(params.objectDistance, isFinite(v) && Math.abs(v) < 500 ? imageDistanceFromLens : 0);
     const viewRange = Math.max(minViewRange, Math.min(maxObjectOrImage * 1.2, 200)); // 20% padding
 
-    // Dynamic scale factor
-    const scale = width / (2 * viewRange); // pixels per cm (viewRange on each side)
+    // Dynamic scale factor with zoom
+    const scale = (width / (2 * viewRange)) * zoomLevel; // pixels per cm (viewRange on each side) with zoom
 
     // Lens positioned at center
     const lensX = width / 2;
@@ -239,7 +240,23 @@ const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
       ctx.stroke();
     }
 
-  }, [params]);
+  }, [params, zoomLevel]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoomLevel(prev => {
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        return Math.max(0.5, Math.min(3, prev * delta));
+      });
+    };
+
+    canvas.addEventListener('wheel', handleWheel);
+    return () => canvas.removeEventListener('wheel', handleWheel);
+  }, []);
 
   return (
     <canvas
