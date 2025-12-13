@@ -481,47 +481,6 @@ const LeChatelierCanvas = ({
       30
     );
 
-    // Draw Legend
-    const legendY = CANVAS_HEIGHT - 30;
-    const legendX = 20;
-
-    // Legend Box Background
-    ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
-    ctx.strokeStyle = "rgba(51, 65, 85, 0.5)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(legendX - 10, legendY - 20, 320, 40, 8);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.font = "12px Arial";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-
-    // Reactant Legend
-    ctx.fillStyle = REACTANT_COLOR;
-    ctx.beginPath();
-    ctx.arc(legendX, legendY, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Reactants", legendX + 15, legendY);
-
-    // Product Legend
-    ctx.fillStyle = PRODUCT_COLOR;
-    ctx.beginPath();
-    ctx.arc(legendX + 100, legendY, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Products", legendX + 115, legendY);
-
-    // Transition Legend
-    ctx.fillStyle = TRANSITION_COLOR;
-    ctx.beginPath();
-    ctx.arc(legendX + 190, legendY, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Transition State", legendX + 205, legendY);
-
     // Update Particles
     particlesRef.current = particlesRef.current.map((particle) => {
       let { x, y, vx, vy } = particle;

@@ -19,7 +19,6 @@ export interface SimulationData {
 
 class AITutorService {
   private isSpeaking = false;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private currentUtterance: SpeechSynthesisUtterance | null = null;
 
   async sendMessage(
@@ -299,6 +298,11 @@ class AITutorService {
 
   stopSpeaking() {
     if (this.isSpeechSupported()) {
+      // Read and detach handlers to prevent stale callbacks after cancel.
+      if (this.currentUtterance) {
+        this.currentUtterance.onend = null;
+        this.currentUtterance.onerror = null;
+      }
       window.speechSynthesis.cancel();
       this.isSpeaking = false;
       this.currentUtterance = null;

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Target, Award, Play, Zap, Book } from 'lucide-react';
-import { SimulationConfig } from '../simulations/types';
+import { SimulationConfig } from '../simulations/types/simulationTypes';
 
 interface SimulationViewerProps {
   config: SimulationConfig;
