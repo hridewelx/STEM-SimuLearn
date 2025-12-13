@@ -68,13 +68,14 @@ const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
     ctx.lineTo(width, lensY);
     ctx.stroke();
 
-    // Define lens aperture (fixed size in pixels, not scaled)
-    const lensAperturePixels = 200;
+    // Define lens aperture (fixed size in base pixels, then scaled by zoom)
+    const baseLensAperturePixels = 200;
+    const lensAperturePixels = baseLensAperturePixels * zoomLevel;
     const halfAperture = lensAperturePixels / 2;
     
     // Draw lens mathematically correct as two circular arcs
     // For a thin symmetric biconvex lens: R = 2f (radius of curvature)
-    const radiusOfCurvature = 2 * f; // R = 2f
+    const radiusOfCurvature = 2 * f; // R = 2f in cm
     const radiusOfCurvaturePixels = radiusOfCurvature * scale;
     
     // Calculate C1 and C2 positions based on geometry
@@ -109,7 +110,7 @@ const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
     ctx.stroke();
 
     // Cap object height to lens aperture (can't be taller than the lens)
-    const maxObjectHeightCm = lensAperturePixels / (scale * 2); // Half of lens aperture in cm
+    const maxObjectHeightCm = baseLensAperturePixels / (scale / zoomLevel * 2); // Half of base lens aperture in cm
     const effectiveObjectHeight = Math.min(params.objectHeight, maxObjectHeightCm);
     const imageHeight = m * effectiveObjectHeight;
 
