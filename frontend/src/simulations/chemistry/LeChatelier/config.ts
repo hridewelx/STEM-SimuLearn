@@ -1,53 +1,62 @@
-import { SimulationConfig } from '../../types/simulationTypes';
-import { LeChatelierIcon } from '../../../assets/icons/LeChatelierIcon';
+import { SimulationConfig } from "../../types/simulationTypes";
+import { LeChatelierIcon } from "../../../assets/icons/LeChatelierIcon";
+import { LeChatelierParams } from "./types";
 
 export const LeChatelierConfig: SimulationConfig = {
-  id: 'le-chatelier',
+  id: "le-chatelier-1",
   name: "Le Chatelier's Principle",
-  description: 'Explore how chemical equilibrium responds to changes in concentration, temperature, and pressure.',
-  longDescription: "Le Chatelier's Principle states that when a system at equilibrium is subjected to a stress, it will shift to counteract that stress and establish a new equilibrium. This simulation lets you manipulate concentration, temperature, and pressure to observe how equilibrium shifts in real-time with visual particle representations and color changes.",
-  category: 'chemistry',
-  difficulty: 'intermediate',
-  duration: 20,
+  description:
+    "Explore how chemical equilibrium responds to changes in temperature, pressure, and concentration through interactive particle simulations.",
+  longDescription:
+    "This simulation demonstrates Le Chatelier's Principle - when a system at equilibrium is disturbed, it shifts to counteract the change and establish a new equilibrium. Watch particles react in real-time as you adjust temperature, pressure, and concentration. See the equilibrium shift visually and understand the underlying chemistry through animated particle collisions and transformations.",
+  category: "chemistry",
+  difficulty: "intermediate",
+  duration: 25,
   objectives: [
-    'Understand how equilibrium systems respond to external stresses',
-    'Predict the direction of equilibrium shifts based on Le Chatelier\'s Principle',
-    'Analyze the effects of concentration, temperature, and pressure changes',
-    'Apply concepts to industrial processes like the Haber process',
-    'Interpret equilibrium constant (K) and reaction quotient (Q)',
+    "Understand Le Chatelier's Principle and equilibrium dynamics",
+    "Observe how temperature affects equilibrium position",
+    "Analyze the effect of pressure changes on gaseous equilibria",
+    "Explore concentration changes and equilibrium shifts",
+    "Differentiate between endothermic and exothermic reactions",
   ],
-  tags: ['equilibrium', 'reversible reactions', 'thermodynamics', 'industrial chemistry'],
-  route: '/simulations/chemistry/le-chatelier',
+  tags: [
+    "equilibrium",
+    "le chatelier",
+    "thermodynamics",
+    "reaction rates",
+    "concentration",
+    "pressure",
+    "temperature",
+  ],
+  route: "/simulations/chemistry/le-chatelier",
   icon: LeChatelierIcon,
   simulationDetails: {
-    howItWorks: 'This simulation models reversible chemical reactions at equilibrium. Particles represent reactants and products, and their relative amounts change as you apply stresses. The color of the solution changes to reflect the equilibrium position - shifting toward products or reactants based on applied stresses.',
+    howItWorks: `This simulation models a reversible chemical reaction at equilibrium. Particles represent reactants (blue) and products (orange). The forward and reverse reactions occur simultaneously at rates that depend on concentration, temperature, and pressure. When you change a condition, watch as the system shifts to counteract your change - this is Le Chatelier's Principle in action!`,
     keyConcepts: [
-      'Equilibrium is dynamic - forward and reverse reactions occur continuously',
-      'Adding reactants shifts equilibrium toward products',
-      'Increasing temperature favors the endothermic direction',
-      'Increasing pressure favors the side with fewer gas moles',
-      'Catalysts speed up equilibrium but don\'t shift position',
+      "Equilibrium is dynamic - reactions continue in both directions",
+      "Increasing temperature favors the endothermic direction",
+      "Increasing pressure favors the side with fewer gas molecules",
+      "Adding a substance shifts equilibrium away from that substance",
+      "The equilibrium constant K changes only with temperature",
     ],
     controls: [
-      'Select different equilibrium reactions to study',
-      'Adjust temperature to see thermal effects',
-      'Change pressure for gas-phase reactions',
-      'Add or remove reactants/products to shift equilibrium',
-      'Watch the Q vs K indicator to predict shift direction',
+      "Choose reaction type (exothermic or endothermic forward reaction)",
+      "Adjust temperature using the slider",
+      "Change pressure/volume with the pressure control",
+      "Add or remove reactants and products",
+      "Observe the Q vs K relationship and shift direction",
+      "Click Start to begin the simulation",
     ],
-    proTip: 'Try the N₂O₄ ⇌ 2NO₂ reaction first - you can actually see the color change from colorless to brown as equilibrium shifts!',
+    proTip:
+      "Try making a sudden large change (like doubling the temperature) to see a dramatic equilibrium shift, then watch as the system gradually reaches its new equilibrium position!",
   },
 };
 
-export const defaultLeChatelierParams = {
-  reaction: 'n2o4_no2',
-  temperature: 298,
-  pressure: 1,
-  volume: 1,
-  reactant1Conc: 0.5,
-  reactant2Conc: 0.5,
-  product1Conc: 0.1,
-  product2Conc: 0.1,
+export const defaultLeChatelierParams: LeChatelierParams = {
+  selectedReactionId: "haber",
+  temperature: 300, // Kelvin
+  pressure: 1, // atm
+  reactantConcentration: 50,
+  productConcentration: 50,
+  volume: 100, // arbitrary units for visualization
 };
-
-export default LeChatelierConfig;

@@ -1,378 +1,716 @@
-import React, { useRef, useEffect, useCallback } from 'react';
-import { REACTIONS, EquilibriumReaction, Particle } from './types';
+import { useRef, useEffect, useCallback, useState } from "react";
+import {
+  EquilibriumParticle,
+  LeChatelierParams,
+  LeChatelierAnalyticsData,
+  ShiftDirection,
+  PREDEFINED_REACTIONS,
+} from "./types";
+import { Plus, Minus } from "lucide-react";
 
 interface LeChatelierCanvasProps {
-  params: {
-    reaction: string;
-    temperature: number;
-    pressure: number;
-    volume: number;
-    reactant1Conc: number;
-    reactant2Conc: number;
-    product1Conc: number;
-    product2Conc: number;
-  };
+  params: LeChatelierParams;
   isRunning: boolean;
-  equilibriumState: {
-    Q: number;
-    Kc: number;
-    position: 'left' | 'right' | 'equilibrium';
-    shiftDirection: 'forward' | 'reverse' | 'none';
-    shiftReason: string;
-  };
-  concentrations: {
-    reactants: number[];
-    products: number[];
-  };
+  onAnalyticsUpdate: (data: LeChatelierAnalyticsData) => void;
 }
 
-const LeChatelierCanvas: React.FC<LeChatelierCanvasProps> = ({
+const LeChatelierCanvas = ({
   params,
   isRunning,
-  equilibriumState,
-  concentrations,
-}) => {
+  onAnalyticsUpdate,
+}: LeChatelierCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const animationRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number>(0);
+  const particlesRef = useRef<EquilibriumParticle[]>([]);
+  const animationFrameRef = useRef<number>();
+  const lastUpdateRef = useRef<number>(0);
+  const [particleKey, setParticleKey] = useState(0);
+  const [statusMessage, setStatusMessage] = useState<{
+    text: string;
+    color: string;
+    timestamp: number;
+  }>({ text: "", color: "", timestamp: 0 });
 
-  const currentReaction: EquilibriumReaction | undefined = REACTIONS.find(r => r.id === params.reaction);
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 450;
 
-  // Initialize particles based on concentrations
+  // Get selected reaction details
+  const selectedReaction =
+    PREDEFINED_REACTIONS.find((r) => r.id === params.selectedReactionId) ||
+    PREDEFINED_REACTIONS[0];
+  const { reactant: REACTANT_COLOR, product: PRODUCT_COLOR } =
+    selectedReaction.colorScheme;
+  const TRANSITION_COLOR = "#A855F7"; // Purple for transitioning particles
+
+  // Calculate Equilibrium Constant (K) using Van't Hoff equation
+  // K(T) = K_ref * exp( (-dH/R) * (1/T - 1/T_ref) )
+  // T_ref = 300K, K_ref = 1 (assumed for visualization)
+  const calculateK = useCallback((temp: number, enthalpy: number): number => {
+    const R = 8.314; // J/(mol*K)
+    const T_ref = 300;
+    const dH_J = enthalpy * 1000; // Convert kJ to J
+
+    // Calculate exponent factor
+    const exponent = (-dH_J / R) * (1 / temp - 1 / T_ref);
+
+    // Limit K to reasonable range for visualization (0.05 to 20)
+    const K = Math.exp(exponent);
+    return Math.max(0.05, Math.min(20, K));
+  }, []);
+
+  // Calculate Reaction Quotient (Q)
+  // For visualization, we use simple particle count ratio, but we could incorporate coefficients
+  const calculateQ = useCallback(
+    (reactants: number, products: number): number => {
+      if (reactants === 0) return Infinity;
+      // Simple Q = [P]/[R] for the visualizer to handle particle counts directly
+      return products / reactants;
+    },
+    []
+  );
+
+  // Calculate Pressure Effect Bias
+  // Higher Pressure favors side with fewer gas moles
+  const getPressureBias = useCallback(
+    (pressure: number) => {
+      const rGas = selectedReaction.reactants.reduce(
+        (acc, r) => acc + (r.state === "g" ? r.coefficient : 0),
+        0
+      );
+      const pGas = selectedReaction.products.reduce(
+        (acc, p) => acc + (p.state === "g" ? p.coefficient : 0),
+        0
+      );
+
+      // Delta n = n_gas(products) - n_gas(reactants)
+      const deltaN = pGas - rGas;
+
+      // If P increases (P > 1):
+      // if deltaN > 0 (more gas on right): shift Left (reverse favored)
+      // if deltaN < 0 (more gas on left): shift Right (forward favored)
+
+      // We formulate a multiplier for the forward/reverse probabilities
+      // Higher P -> shift to fewer moles.
+      // Pressure factor: P^deltaN in equilibrium expression?
+      // Actually, Kp = Kc * (RT)^deltaN.
+      // Let's us a simple bias for probability:
+      // Rate Multiplier ~ P^(-deltaN * 0.5) roughly
+
+      const bias = Math.pow(pressure, -deltaN);
+      return bias;
+    },
+    [selectedReaction]
+  );
+
+  // Determine shift direction based on Q vs K
+  const getShiftDirection = useCallback(
+    (Q: number, K: number): ShiftDirection => {
+      // We normalize Q with the pressure bias to see the "Effective Q" vs K
+      // Or simpler: Compare Q vs (K * PressureEffect)
+      // Actually, K changes effectively with pressure due to concentration changes in reality
+
+      // Let's keep it simple: Compare Q and K directly, but K effectively shifts?
+      // No, K is constant. Q changes efficiently.
+      // Let's use the reaction probabilities to drive the visual state,
+      // and determine "Shift" based on the net rate.
+
+      // We calculate net rate in handleReactions, so we can use that to determine shift direction?
+      // For analytics display, we usually compare Q vs K.
+      // Let's stick to Q vs K for display, but modify K for display if we want to show pressure effect?
+      // User wants "Show pressure effect". Use the pressure bias to adjust effective equilibrium.
+
+      // Let's define "Effective Equilibrium" as K_effective
+      const bias = getPressureBias(params.pressure);
+      const K_effective = K * bias;
+
+      const tolerance = 0.15 * K_effective;
+      if (Math.abs(Q - K_effective) < tolerance) return "none";
+      return Q < K_effective ? "forward" : "reverse";
+    },
+    [getPressureBias, params.pressure]
+  );
+
+  // Handle elastic collisions
+  const handleCollisions = useCallback(
+    (particles: EquilibriumParticle[]): EquilibriumParticle[] => {
+      const updatedParticles = [...particles];
+      for (let i = 0; i < updatedParticles.length; i++) {
+        for (let j = i + 1; j < updatedParticles.length; j++) {
+          const p1 = updatedParticles[i];
+          const p2 = updatedParticles[j];
+
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < p1.radius + p2.radius && distance > 0) {
+            const angle = Math.atan2(dy, dx);
+            const sin = Math.sin(angle);
+            const cos = Math.cos(angle);
+
+            const v1x = p1.vx * cos + p1.vy * sin;
+            const v1y = p1.vy * cos - p1.vx * sin;
+            const v2x = p2.vx * cos + p2.vy * sin;
+            const v2y = p2.vy * cos - p2.vx * sin;
+
+            const mass1 = 1;
+            const mass2 = 1;
+            const totalMass = mass1 + mass2;
+            const newV1x =
+              ((mass1 - mass2) * v1x + 2 * mass2 * v2x) / totalMass;
+            const newV2x =
+              ((mass2 - mass1) * v2x + 2 * mass1 * v1x) / totalMass;
+
+            updatedParticles[i] = {
+              ...updatedParticles[i],
+              vx: newV1x * cos - v1y * sin,
+              vy: v1y * cos + newV1x * sin,
+            };
+            updatedParticles[j] = {
+              ...updatedParticles[j],
+              vx: newV2x * cos - v2y * sin,
+              vy: v2y * cos + newV2x * sin,
+            };
+
+            const overlap = p1.radius + p2.radius - distance;
+            updatedParticles[i].x -= (overlap / 2) * cos;
+            updatedParticles[i].y -= (overlap / 2) * sin;
+            updatedParticles[j].x += (overlap / 2) * cos;
+            updatedParticles[j].y += (overlap / 2) * sin;
+          }
+        }
+      }
+      return updatedParticles;
+    },
+    []
+  );
+
+  // Initialize particles
   const initializeParticles = useCallback(() => {
-    if (!currentReaction) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const particles: EquilibriumParticle[] = [];
+    const totalParticles = 100;
+    const reactantCount = Math.round(
+      (params.reactantConcentration / 100) * totalParticles
+    );
+    const productCount = totalParticles - reactantCount;
 
-    const particles: Particle[] = [];
-    let id = 0;
+    // Reactants
+    for (let i = 0; i < reactantCount; i++) {
+      const speed = (params.temperature / 300) * 2;
+      particles.push({
+        id: i,
+        x: 30 + Math.random() * (CANVAS_WIDTH - 60),
+        y: 50 + Math.random() * (CANVAS_HEIGHT - 100),
+        vx: (Math.random() - 0.5) * speed,
+        vy: (Math.random() - 0.5) * speed,
+        radius: 8,
+        type: "reactant",
+        color: REACTANT_COLOR,
+        opacity: 1,
+        isTransitioning: false,
+      });
+    }
 
-    // Create reactant particles
-    concentrations.reactants.forEach((conc, speciesIdx) => {
-      const count = Math.floor(conc * 30); // Scale concentration to particle count
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          id: id++,
-          x: 50 + Math.random() * (canvas.width / 2 - 100),
-          y: 100 + Math.random() * (canvas.height - 200),
-          vx: (Math.random() - 0.5) * 2 * Math.sqrt(params.temperature / 298),
-          vy: (Math.random() - 0.5) * 2 * Math.sqrt(params.temperature / 298),
-          type: 'reactant',
-          speciesIndex: speciesIdx,
-          radius: 8,
-          color: currentReaction.colors.reactants[speciesIdx] || '#888',
-        });
-      }
-    });
-
-    // Create product particles
-    concentrations.products.forEach((conc, speciesIdx) => {
-      const count = Math.floor(conc * 30);
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          id: id++,
-          x: canvas.width / 2 + 50 + Math.random() * (canvas.width / 2 - 100),
-          y: 100 + Math.random() * (canvas.height - 200),
-          vx: (Math.random() - 0.5) * 2 * Math.sqrt(params.temperature / 298),
-          vy: (Math.random() - 0.5) * 2 * Math.sqrt(params.temperature / 298),
-          type: 'product',
-          speciesIndex: speciesIdx,
-          radius: 8,
-          color: currentReaction.colors.products[speciesIdx] || '#888',
-        });
-      }
-    });
-
+    // Products
+    for (let i = 0; i < productCount; i++) {
+      const speed = (params.temperature / 300) * 2;
+      particles.push({
+        id: reactantCount + i,
+        x: 30 + Math.random() * (CANVAS_WIDTH - 60),
+        y: 50 + Math.random() * (CANVAS_HEIGHT - 100),
+        vx: (Math.random() - 0.5) * speed,
+        vy: (Math.random() - 0.5) * speed,
+        radius: 8,
+        type: "product",
+        color: PRODUCT_COLOR,
+        opacity: 1,
+        isTransitioning: false,
+      });
+    }
     particlesRef.current = particles;
-  }, [currentReaction, concentrations, params.temperature]);
+  }, [
+    params.reactantConcentration,
+    params.temperature,
+    REACTANT_COLOR,
+    PRODUCT_COLOR,
+  ]);
 
-  // Update particles based on equilibrium shift
+  // Add Particle
+  const addParticle = useCallback(
+    (type: "reactant" | "product") => {
+      const speed = (params.temperature / 300) * 2;
+      const newParticle: EquilibriumParticle = {
+        id: Date.now(),
+        x: 50 + Math.random() * (CANVAS_WIDTH - 100),
+        y: 80 + Math.random() * (CANVAS_HEIGHT - 160),
+        vx: (Math.random() - 0.5) * speed,
+        vy: (Math.random() - 0.5) * speed,
+        radius: 8,
+        type,
+        color: type === "reactant" ? REACTANT_COLOR : PRODUCT_COLOR,
+        opacity: 1,
+        isTransitioning: false,
+      };
+      particlesRef.current = [...particlesRef.current, newParticle];
+      setParticleKey((prev) => prev + 1);
+
+      // Status message based on Le Chatelier
+      if (type === "reactant") {
+        setStatusMessage({
+          text: "+ Reactant added → Shifting toward Products",
+          color: "text-orange-400",
+          timestamp: Date.now(),
+        });
+      } else {
+        setStatusMessage({
+          text: "+ Product added → Shifting toward Reactants",
+          color: "text-blue-400",
+          timestamp: Date.now(),
+        });
+      }
+    },
+    [params.temperature, REACTANT_COLOR, PRODUCT_COLOR]
+  );
+
+  // Remove Particle
+  const removeParticle = useCallback((type: "reactant" | "product") => {
+    const particles = particlesRef.current;
+    const targetParticles = particles.filter(
+      (p) => p.type === type && !p.isTransitioning
+    );
+    if (targetParticles.length > 5) {
+      const toRemove = targetParticles[targetParticles.length - 1];
+      particlesRef.current = particles.filter((p) => p.id !== toRemove.id);
+      setParticleKey((prev) => prev + 1);
+
+      if (type === "reactant") {
+        setStatusMessage({
+          text: "- Reactant removed → Shifting toward Reactants",
+          color: "text-blue-400",
+          timestamp: Date.now(),
+        });
+      } else {
+        setStatusMessage({
+          text: "- Product removed → Shifting toward Products",
+          color: "text-orange-400",
+          timestamp: Date.now(),
+        });
+      }
+    }
+  }, []);
+
+  // Handle Reactions based on equilibrium logic
+  const handleReactions = useCallback(() => {
+    const particles = particlesRef.current;
+    const reactants = particles.filter(
+      (p) => p.type === "reactant" && !p.isTransitioning
+    );
+    const products = particles.filter(
+      (p) => p.type === "product" && !p.isTransitioning
+    );
+
+    const K = calculateK(params.temperature, selectedReaction.enthalpy);
+    // Effective K includes pressure bias
+    const pressureBias = getPressureBias(params.pressure);
+    const K_effective = K * pressureBias;
+
+    const Q = calculateQ(reactants.length, products.length);
+    const shift = getShiftDirection(Q, K); // This function internally re-calculates/uses K_effective if needed, but we pass raw K.
+    // Wait, getShiftDirection calls getPressureBias too.
+
+    // Determine probabilities
+    // We want ratio of forward/reverse to equal K_effective eventually
+    // k_f / k_r = K_effective
+
+    // Base probability factor
+    const baseRate = 0.02 * (params.temperature / 300);
+
+    let forwardProb = baseRate;
+    let reverseProb = baseRate;
+
+    if (K_effective > 1) {
+      forwardProb = baseRate * Math.sqrt(K_effective);
+      reverseProb = baseRate / Math.sqrt(K_effective);
+    } else {
+      forwardProb = baseRate * K_effective; // Reduce forward
+      reverseProb = baseRate;
+    }
+
+    // Apply shift acceleration
+    if (shift === "forward") {
+      forwardProb *= 1.5;
+    } else if (shift === "reverse") {
+      reverseProb *= 1.5;
+    }
+
+    // Limit probabilities
+    forwardProb = Math.min(0.2, forwardProb);
+    reverseProb = Math.min(0.2, reverseProb);
+
+    // Execute reactions
+    // Forward: R -> P
+    reactants.forEach((particle) => {
+      if (
+        Math.random() < forwardProb &&
+        !particle.isTransitioning &&
+        reactants.length > 5
+      ) {
+        particle.isTransitioning = true;
+        particle.color = TRANSITION_COLOR;
+        setTimeout(() => {
+          particle.type = "product";
+          particle.color = PRODUCT_COLOR;
+          particle.isTransitioning = false;
+        }, 300);
+      }
+    });
+
+    // Reverse: P -> R
+    products.forEach((particle) => {
+      if (
+        Math.random() < reverseProb &&
+        !particle.isTransitioning &&
+        products.length > 5
+      ) {
+        particle.isTransitioning = true;
+        particle.color = TRANSITION_COLOR;
+        setTimeout(() => {
+          particle.type = "reactant";
+          particle.color = REACTANT_COLOR;
+          particle.isTransitioning = false;
+        }, 300);
+      }
+    });
+  }, [
+    params.temperature,
+    params.pressure,
+    selectedReaction,
+    calculateK,
+    calculateQ,
+    getPressureBias,
+    getShiftDirection,
+    REACTANT_COLOR,
+    PRODUCT_COLOR,
+    TRANSITION_COLOR,
+  ]);
+
+  // Update Analytics
+  const updateAnalytics = useCallback(() => {
+    const particles = particlesRef.current;
+    const reactants = particles.filter((p) => p.type === "reactant");
+    const products = particles.filter((p) => p.type === "product");
+
+    const K = calculateK(params.temperature, selectedReaction.enthalpy);
+    // We display the REAL K (standard state), but maybe mention pressure effect?
+    // Let's display the effective K if we want Q vs K to make sense visually.
+    const pressureBias = getPressureBias(params.pressure);
+    const K_effective = K * pressureBias;
+
+    const Q = calculateQ(reactants.length, products.length);
+    const shift = getShiftDirection(Q, K); // Uses params.pressure internally
+
+    const analytics: LeChatelierAnalyticsData = {
+      reactantCount: reactants.length,
+      productCount: products.length,
+      totalParticles: particles.length,
+      equilibriumConstant: K_effective, // Displaying effective K so the Q comparison works
+      reactionQuotient: Q,
+      shiftDirection: shift,
+      forwardReactionRate: shift === "forward" ? 0.05 : 0.02,
+      reverseReactionRate: shift === "reverse" ? 0.05 : 0.02,
+      temperature: params.temperature,
+      pressure: params.pressure,
+      percentReactants: (reactants.length / particles.length) * 100,
+      percentProducts: (products.length / particles.length) * 100,
+      isAtEquilibrium: shift === "none",
+    };
+
+    onAnalyticsUpdate(analytics);
+  }, [
+    params.temperature,
+    params.pressure,
+    selectedReaction,
+    calculateK,
+    calculateQ,
+    getShiftDirection,
+    getPressureBias,
+    onAnalyticsUpdate,
+  ]);
+
+  // Animation Loop
+  const animate = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    // Clear
+    ctx.fillStyle = "#0f172a";
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.strokeStyle = "#334155";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Draw Equation Header
+    const reactantCount = particlesRef.current.filter(
+      (p) => p.type === "reactant"
+    ).length;
+    const productCount = particlesRef.current.filter(
+      (p) => p.type === "product"
+    ).length;
+
+    ctx.font = "bold 18px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillStyle = REACTANT_COLOR;
+    ctx.fillText(
+      `${selectedReaction.reactants
+        .map((r) => r.name)
+        .join(" + ")} (${reactantCount})`,
+      CANVAS_WIDTH / 4,
+      30
+    );
+
+    ctx.fillStyle = "#fff";
+    ctx.fillText("⇌", CANVAS_WIDTH / 2, 30);
+
+    ctx.fillStyle = PRODUCT_COLOR;
+    ctx.fillText(
+      `${selectedReaction.products
+        .map((p) => p.name)
+        .join(" + ")} (${productCount})`,
+      (CANVAS_WIDTH * 3) / 4,
+      30
+    );
+
+    // Draw Legend
+    const legendY = CANVAS_HEIGHT - 30;
+    const legendX = 20;
+
+    // Legend Box Background
+    ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
+    ctx.strokeStyle = "rgba(51, 65, 85, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(legendX - 10, legendY - 20, 320, 40, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+
+    // Reactant Legend
+    ctx.fillStyle = REACTANT_COLOR;
+    ctx.beginPath();
+    ctx.arc(legendX, legendY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("Reactants", legendX + 15, legendY);
+
+    // Product Legend
+    ctx.fillStyle = PRODUCT_COLOR;
+    ctx.beginPath();
+    ctx.arc(legendX + 100, legendY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("Products", legendX + 115, legendY);
+
+    // Transition Legend
+    ctx.fillStyle = TRANSITION_COLOR;
+    ctx.beginPath();
+    ctx.arc(legendX + 190, legendY, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("Transition State", legendX + 205, legendY);
+
+    // Update Particles
+    particlesRef.current = particlesRef.current.map((particle) => {
+      let { x, y, vx, vy } = particle;
+
+      // Update velocity based on temperature (simple scaling if needed, but handled in init)
+      // Just move
+      x += vx;
+      y += vy;
+
+      // Wall bounce
+      if (x - particle.radius < 0) {
+        x = particle.radius;
+        vx = -vx;
+      }
+      if (x + particle.radius > CANVAS_WIDTH) {
+        x = CANVAS_WIDTH - particle.radius;
+        vx = -vx;
+      }
+      if (y - particle.radius < 45) {
+        y = 45 + particle.radius;
+        vy = -vy;
+      } // Header space
+      if (y + particle.radius > CANVAS_HEIGHT) {
+        y = CANVAS_HEIGHT - particle.radius;
+        vy = -vy;
+      }
+
+      return { ...particle, x, y, vx, vy };
+    });
+
+    // Collisions
+    particlesRef.current = handleCollisions(particlesRef.current);
+
+    // Draw
+    particlesRef.current.forEach((particle) => {
+      // Glow
+      const grad = ctx.createRadialGradient(
+        particle.x,
+        particle.y,
+        0,
+        particle.x,
+        particle.y,
+        particle.radius * 2
+      );
+      grad.addColorStop(0, particle.color + "60");
+      grad.addColorStop(1, "transparent");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.radius * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core
+      ctx.fillStyle = particle.color;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Highlight
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.arc(
+        particle.x - 2,
+        particle.y - 2,
+        particle.radius * 0.3,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    });
+
+    if (isRunning) {
+      const now = Date.now();
+      if (now - lastUpdateRef.current > 100) {
+        handleReactions();
+        updateAnalytics();
+        lastUpdateRef.current = now;
+      }
+    }
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+  }, [
+    isRunning,
+    handleCollisions,
+    handleReactions,
+    updateAnalytics,
+    REACTANT_COLOR,
+    PRODUCT_COLOR,
+    selectedReaction,
+  ]);
+
+  // Effects
   useEffect(() => {
     initializeParticles();
-  }, [initializeParticles, params.reaction]);
+  }, [initializeParticles, params.selectedReactionId]); // Re-init on reaction change
 
-  // Lerp color helper
-  const lerpColor = (color1: string, color2: string, ratio: number): string => {
-    const hex = (c: string) => parseInt(c, 16);
-    const r1 = hex(color1.slice(1, 3)), g1 = hex(color1.slice(3, 5)), b1 = hex(color1.slice(5, 7));
-    const r2 = hex(color2.slice(1, 3)), g2 = hex(color2.slice(3, 5)), b2 = hex(color2.slice(5, 7));
-    const r = Math.round(r1 + (r2 - r1) * ratio);
-    const g = Math.round(g1 + (g2 - g1) * ratio);
-    const b = Math.round(b1 + (b2 - b1) * ratio);
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  };
-
-  // Animation loop
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const animate = (timestamp: number) => {
-      // Update timestamp for potential future use
-      lastTimeRef.current = timestamp;
-
-      // Clear canvas
-      ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Draw container background with gradient based on equilibrium
-      const totalReactants = concentrations.reactants.reduce((a, b) => a + b, 0);
-      const totalProducts = concentrations.products.reduce((a, b) => a + b, 0);
-      const productRatio = totalProducts / Math.max(0.1, totalReactants + totalProducts);
-
-      // Background color based on dominant species
-      if (currentReaction) {
-        const reactantColor = currentReaction.colors.reactants[0] || '#444444';
-        const productColor = currentReaction.colors.products[0] || '#444444';
-        const bgColor = lerpColor(reactantColor, productColor, productRatio);
-        
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, `${bgColor}20`);
-        gradient.addColorStop(0.5, `${bgColor}40`);
-        gradient.addColorStop(1, `${bgColor}20`);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      // Draw container (beaker/flask shape)
-      ctx.strokeStyle = 'rgba(135, 206, 235, 0.6)';
-      ctx.lineWidth = 3;
-      
-      // Flask outline
-      const centerX = canvas.width / 2;
-      const flaskTop = 60;
-      const flaskBottom = canvas.height - 40;
-      const neckWidth = 80;
-      const neckHeight = 50;
-
-      ctx.beginPath();
-      // Left side
-      ctx.moveTo(centerX - neckWidth / 2, flaskTop);
-      ctx.lineTo(centerX - neckWidth / 2, flaskTop + neckHeight);
-      ctx.quadraticCurveTo(40, flaskTop + neckHeight + 50, 40, flaskBottom - 30);
-      ctx.lineTo(40, flaskBottom);
-      // Bottom
-      ctx.lineTo(canvas.width - 40, flaskBottom);
-      // Right side
-      ctx.lineTo(canvas.width - 40, flaskBottom - 30);
-      ctx.quadraticCurveTo(canvas.width - 40, flaskTop + neckHeight + 50, centerX + neckWidth / 2, flaskTop + neckHeight);
-      ctx.lineTo(centerX + neckWidth / 2, flaskTop);
-      ctx.stroke();
-
-      // Flask neck rim
-      ctx.beginPath();
-      ctx.ellipse(centerX, flaskTop, neckWidth / 2, 8, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(135, 206, 235, 0.8)';
-      ctx.stroke();
-
-      // Draw liquid level based on volume
-      const liquidLevel = flaskBottom - 50 - (params.volume / 5) * (flaskBottom - flaskTop - neckHeight - 100);
-      if (currentReaction) {
-        const liquidColor = lerpColor(
-          currentReaction.colors.reactants[0] || '#888',
-          currentReaction.colors.products[0] || '#888',
-          productRatio
-        );
-        
-        // Liquid gradient
-        const liquidGradient = ctx.createLinearGradient(0, liquidLevel, 0, flaskBottom);
-        liquidGradient.addColorStop(0, `${liquidColor}80`);
-        liquidGradient.addColorStop(1, `${liquidColor}cc`);
-        ctx.fillStyle = liquidGradient;
-        
-        ctx.beginPath();
-        ctx.moveTo(50, liquidLevel);
-        ctx.lineTo(50, flaskBottom - 5);
-        ctx.lineTo(canvas.width - 50, flaskBottom - 5);
-        ctx.lineTo(canvas.width - 50, liquidLevel);
-        ctx.closePath();
-        ctx.fill();
-
-        // Liquid surface highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.beginPath();
-        ctx.ellipse(centerX, liquidLevel, (canvas.width - 100) / 2, 10, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Update and draw particles
-      const speedFactor = Math.sqrt(params.temperature / 298) * (isRunning ? 1 : 0);
-      
-      particlesRef.current.forEach(particle => {
-        if (isRunning) {
-          // Update position
-          particle.x += particle.vx * speedFactor;
-          particle.y += particle.vy * speedFactor;
-
-          // Bounce off walls
-          const margin = 55;
-          if (particle.x < margin) {
-            particle.x = margin;
-            particle.vx *= -1;
-          }
-          if (particle.x > canvas.width - margin) {
-            particle.x = canvas.width - margin;
-            particle.vx *= -1;
-          }
-          if (particle.y < liquidLevel + 20) {
-            particle.y = liquidLevel + 20;
-            particle.vy *= -1;
-          }
-          if (particle.y > flaskBottom - 20) {
-            particle.y = flaskBottom - 20;
-            particle.vy *= -1;
-          }
-
-          // Random motion
-          particle.vx += (Math.random() - 0.5) * 0.2;
-          particle.vy += (Math.random() - 0.5) * 0.2;
-
-          // Damping
-          particle.vx *= 0.99;
-          particle.vy *= 0.99;
-        }
-
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color;
-        ctx.fill();
-        
-        // Particle glow
-        const glow = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.radius * 2
-        );
-        glow.addColorStop(0, `${particle.color}60`);
-        glow.addColorStop(1, 'transparent');
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.radius * 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Particle highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.beginPath();
-        ctx.arc(particle.x - 2, particle.y - 2, particle.radius / 3, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Draw equilibrium indicator
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 16px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('⇌', centerX, 35);
-
-      // Draw shift arrow if not at equilibrium
-      if (equilibriumState.shiftDirection !== 'none' && isRunning) {
-        ctx.fillStyle = equilibriumState.shiftDirection === 'forward' ? '#4ade80' : '#f87171';
-        ctx.font = 'bold 24px Arial';
-        const arrow = equilibriumState.shiftDirection === 'forward' ? '→' : '←';
-        ctx.fillText(arrow, centerX + (equilibriumState.shiftDirection === 'forward' ? 30 : -30), 35);
-      }
-
-      // Draw reaction equation
-      if (currentReaction) {
-        ctx.fillStyle = '#aaa';
-        ctx.font = '14px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(currentReaction.equation, centerX, canvas.height - 15);
-      }
-
-      // Draw Q vs K indicator
-      const indicatorX = canvas.width - 120;
-      const indicatorY = 30;
-      
-      ctx.fillStyle = '#333';
-      ctx.fillRect(indicatorX - 60, indicatorY - 15, 120, 50);
-      ctx.strokeStyle = '#555';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(indicatorX - 60, indicatorY - 15, 120, 50);
-
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Q = ${equilibriumState.Q.toExponential(2)}`, indicatorX - 50, indicatorY + 5);
-      ctx.fillText(`K = ${equilibriumState.Kc.toExponential(2)}`, indicatorX - 50, indicatorY + 22);
-
-      // Q vs K status
-      ctx.textAlign = 'right';
-      if (equilibriumState.Q < equilibriumState.Kc * 0.9) {
-        ctx.fillStyle = '#4ade80';
-        ctx.fillText('Q < K →', indicatorX + 55, indicatorY + 14);
-      } else if (equilibriumState.Q > equilibriumState.Kc * 1.1) {
-        ctx.fillStyle = '#f87171';
-        ctx.fillText('Q > K ←', indicatorX + 55, indicatorY + 14);
-      } else {
-        ctx.fillStyle = '#facc15';
-        ctx.fillText('Q ≈ K', indicatorX + 55, indicatorY + 14);
-      }
-
-      // Draw concentration bars
-      const barWidth = 60;
-      const barMaxHeight = 80;
-      const barY = 80;
-
-      // Reactants bar
-      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
-      ctx.fillRect(30, barY, barWidth, barMaxHeight);
-      const reactantHeight = Math.min(barMaxHeight, (totalReactants / 3) * barMaxHeight);
-      ctx.fillStyle = currentReaction?.colors.reactants[0] || '#3b82f6';
-      ctx.fillRect(30, barY + barMaxHeight - reactantHeight, barWidth, reactantHeight);
-      ctx.strokeStyle = '#3b82f6';
-      ctx.strokeRect(30, barY, barWidth, barMaxHeight);
-      ctx.fillStyle = '#fff';
-      ctx.font = '10px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Reactants', 60, barY + barMaxHeight + 15);
-      ctx.fillText(`${totalReactants.toFixed(2)} M`, 60, barY + barMaxHeight + 28);
-
-      // Products bar
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
-      ctx.fillRect(canvas.width - 90, barY, barWidth, barMaxHeight);
-      const productHeight = Math.min(barMaxHeight, (totalProducts / 3) * barMaxHeight);
-      ctx.fillStyle = currentReaction?.colors.products[0] || '#ef4444';
-      ctx.fillRect(canvas.width - 90, barY + barMaxHeight - productHeight, barWidth, productHeight);
-      ctx.strokeStyle = '#ef4444';
-      ctx.strokeRect(canvas.width - 90, barY, barWidth, barMaxHeight);
-      ctx.fillStyle = '#fff';
-      ctx.fillText('Products', canvas.width - 60, barY + barMaxHeight + 15);
-      ctx.fillText(`${totalProducts.toFixed(2)} M`, canvas.width - 60, barY + barMaxHeight + 28);
-
-      // Stress indicator
-      if (equilibriumState.shiftReason && isRunning) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(centerX - 150, canvas.height - 80, 300, 30);
-        ctx.fillStyle = '#facc15';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(equilibriumState.shiftReason, centerX, canvas.height - 60);
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
+    animate();
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationFrameRef.current)
+        cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [isRunning, params, currentReaction, equilibriumState, concentrations]);
+  }, [animate]);
+
+  useEffect(() => {
+    updateAnalytics();
+  }, [updateAnalytics, particleKey]);
+
+  useEffect(() => {
+    if (statusMessage.text) {
+      const timer = setTimeout(
+        () => setStatusMessage({ text: "", color: "", timestamp: 0 }),
+        3000
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [statusMessage.timestamp]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={700}
-      height={500}
-      className="w-full h-full rounded-lg"
-      style={{ background: '#1a1a2e' }}
-    />
+    <div className="w-full h-full flex flex-col items-center gap-3">
+      {/* Controls Bar */}
+      <div className="flex items-center justify-between w-full max-w-[800px] px-2 gap-4">
+        <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
+          <span
+            className="text-sm font-medium"
+            style={{ color: REACTANT_COLOR }}
+          >
+            Reactants:
+          </span>
+          <button
+            onClick={() => removeParticle("reactant")}
+            className="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            <Minus className="w-4 h-4 text-white" />
+          </button>
+          <span className="text-white font-bold min-w-[30px] text-center">
+            {particlesRef.current.filter((p) => p.type === "reactant").length}
+          </span>
+          <button
+            onClick={() => addParticle("reactant")}
+            className="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            <Plus className="w-4 h-4 text-white" />
+          </button>
+        </div>
+
+        <div
+          className={`flex-1 text-center transition-all duration-300 ${
+            statusMessage.text ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span
+            className={`text-sm font-semibold ${statusMessage.color} animate-pulse`}
+          >
+            {statusMessage.text}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
+          <span
+            className="text-sm font-medium"
+            style={{ color: PRODUCT_COLOR }}
+          >
+            Products:
+          </span>
+          <button
+            onClick={() => removeParticle("product")}
+            className="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            <Minus className="w-4 h-4 text-white" />
+          </button>
+          <span className="text-white font-bold min-w-[30px] text-center">
+            {particlesRef.current.filter((p) => p.type === "product").length}
+          </span>
+          <button
+            onClick={() => addParticle("product")}
+            className="p-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            <Plus className="w-4 h-4 text-white" />
+          </button>
+        </div>
+      </div>
+
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        className="rounded-xl border-2 border-gray-600 shadow-2xl max-w-full"
+      />
+    </div>
   );
 };
 

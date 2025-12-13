@@ -1,10 +1,11 @@
-import { Play, Pause, RotateCcw } from 'lucide-react';
-import { DiffusionParams } from '../../../types/simulation';
+import { Play, Pause, RotateCcw } from "lucide-react";
+import { DiffusionParams } from "../../../types/simulation";
+import { useTranslation } from "react-i18next";
 
 interface DiffusionControlsProps {
   params: DiffusionParams;
   isRunning: boolean;
-  speed: 'normal' | 'slow';
+  speed: "normal" | "slow";
   hasDivider: boolean;
   showCenterOfMass: boolean;
   showParticleFlow: boolean;
@@ -38,13 +39,17 @@ const DiffusionControls = ({
   onToggleParticleFlow,
   onToggleScale,
   onToggleStopwatch,
-  onReset
+  onReset,
 }: DiffusionControlsProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-gray-800 text-white rounded-2xl p-6 shadow-2xl">
       {/* Number of Particles */}
       <div className="mb-6">
-        <h3 className="font-bold text-lg mb-4">Number of Particles</h3>
+        <h3 className="font-bold text-lg mb-4">
+          {t("diffusion.controls.particle_count")}
+        </h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -52,7 +57,9 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.leftCount}
-                onChange={(e) => onParamsChange({ leftCount: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  onParamsChange({ leftCount: parseInt(e.target.value) || 0 })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="0"
                 max="100"
@@ -63,7 +70,9 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.rightCount}
-                onChange={(e) => onParamsChange({ rightCount: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  onParamsChange({ rightCount: parseInt(e.target.value) || 0 })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="0"
                 max="100"
@@ -75,7 +84,9 @@ const DiffusionControls = ({
 
       {/* Mass */}
       <div className="mb-6">
-        <h3 className="font-bold text-lg mb-4">Mass (AMU)</h3>
+        <h3 className="font-bold text-lg mb-4">
+          {t("diffusion.controls.mass")}
+        </h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -83,7 +94,9 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.leftMass}
-                onChange={(e) => onParamsChange({ leftMass: parseFloat(e.target.value) || 1 })}
+                onChange={(e) =>
+                  onParamsChange({ leftMass: parseFloat(e.target.value) || 1 })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="1"
                 max="50"
@@ -95,7 +108,9 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.rightMass}
-                onChange={(e) => onParamsChange({ rightMass: parseFloat(e.target.value) || 1 })}
+                onChange={(e) =>
+                  onParamsChange({ rightMass: parseFloat(e.target.value) || 1 })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="1"
                 max="50"
@@ -108,7 +123,9 @@ const DiffusionControls = ({
 
       {/* Radius */}
       <div className="mb-6">
-        <h3 className="font-bold text-lg mb-4">Radius (pm)</h3>
+        <h3 className="font-bold text-lg mb-4">
+          {t("diffusion.controls.radius")}
+        </h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -116,7 +133,11 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.leftRadius}
-                onChange={(e) => onParamsChange({ leftRadius: parseFloat(e.target.value) || 5 })}
+                onChange={(e) =>
+                  onParamsChange({
+                    leftRadius: parseFloat(e.target.value) || 5,
+                  })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="5"
                 max="30"
@@ -128,7 +149,11 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.rightRadius}
-                onChange={(e) => onParamsChange({ rightRadius: parseFloat(e.target.value) || 5 })}
+                onChange={(e) =>
+                  onParamsChange({
+                    rightRadius: parseFloat(e.target.value) || 5,
+                  })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="5"
                 max="30"
@@ -141,7 +166,9 @@ const DiffusionControls = ({
 
       {/* Initial Temperature */}
       <div className="mb-6">
-        <h3 className="font-bold text-lg mb-4">Initial Temperature (K)</h3>
+        <h3 className="font-bold text-lg mb-4">
+          {t("diffusion.controls.temperature")}
+        </h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -149,7 +176,11 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.leftTemp}
-                onChange={(e) => onParamsChange({ leftTemp: parseFloat(e.target.value) || 100 })}
+                onChange={(e) =>
+                  onParamsChange({
+                    leftTemp: parseFloat(e.target.value) || 100,
+                  })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="100"
                 max="1000"
@@ -161,7 +192,11 @@ const DiffusionControls = ({
               <input
                 type="number"
                 value={params.rightTemp}
-                onChange={(e) => onParamsChange({ rightTemp: parseFloat(e.target.value) || 100 })}
+                onChange={(e) =>
+                  onParamsChange({
+                    rightTemp: parseFloat(e.target.value) || 100,
+                  })
+                }
                 className="w-20 px-2 py-1 bg-gray-700 rounded text-center"
                 min="100"
                 max="1000"
@@ -178,7 +213,7 @@ const DiffusionControls = ({
           onClick={onToggleDivider}
           className="btn btn-success w-full mb-6"
         >
-          Remove Divider
+          {t("diffusion.controls.remove_divider")}
         </button>
       )}
 
@@ -191,7 +226,7 @@ const DiffusionControls = ({
             onChange={onToggleCenterOfMass}
             className="checkbox checkbox-sm"
           />
-          <span>Center of Mass</span>
+          <span>{t("diffusion.controls.center_of_mass")}</span>
           <div className="ml-auto flex gap-1">
             <div className="w-3 h-3 border border-blue-500 rounded"></div>
             <div className="w-3 h-3 border border-red-500 rounded"></div>
@@ -205,7 +240,7 @@ const DiffusionControls = ({
             onChange={onToggleParticleFlow}
             className="checkbox checkbox-sm"
           />
-          <span>Particle Flow Rate</span>
+          <span>{t("diffusion.controls.flow_rate")}</span>
           <div className="ml-auto flex gap-1">
             <div className="w-3 h-1 bg-blue-500"></div>
             <div className="w-3 h-1 bg-blue-500"></div>
@@ -219,7 +254,7 @@ const DiffusionControls = ({
             onChange={onToggleScale}
             className="checkbox checkbox-sm"
           />
-          <span>Scale</span>
+          <span>{t("diffusion.controls.scale")}</span>
         </label>
 
         <label className="flex items-center gap-3 cursor-pointer">
@@ -229,7 +264,7 @@ const DiffusionControls = ({
             onChange={onToggleStopwatch}
             className="checkbox checkbox-sm"
           />
-          <span>Stopwatch</span>
+          <span>{t("diffusion.controls.stopwatch")}</span>
         </label>
       </div>
 
@@ -239,12 +274,13 @@ const DiffusionControls = ({
           onClick={onToggleRunning}
           className="btn btn-primary flex-1 gap-2"
         >
-          {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+          {isRunning ? (
+            <Pause className="w-5 h-5" />
+          ) : (
+            <Play className="w-5 h-5" />
+          )}
         </button>
-        <button
-          onClick={onReset}
-          className="btn btn-outline flex-1 gap-2"
-        >
+        <button onClick={onReset} className="btn btn-outline flex-1 gap-2">
           <RotateCcw className="w-5 h-5" />
         </button>
       </div>
@@ -255,21 +291,21 @@ const DiffusionControls = ({
           <input
             type="radio"
             name="speed"
-            checked={speed === 'normal'}
+            checked={speed === "normal"}
             onChange={() => onToggleSpeed()}
             className="radio radio-sm"
           />
-          <span>Normal</span>
+          <span>{t("diffusion.controls.speed.normal")}</span>
         </label>
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="radio"
             name="speed"
-            checked={speed === 'slow'}
+            checked={speed === "slow"}
             onChange={() => onToggleSpeed()}
             className="radio radio-sm"
           />
-          <span>Slow</span>
+          <span>{t("diffusion.controls.speed.slow")}</span>
         </label>
       </div>
     </div>

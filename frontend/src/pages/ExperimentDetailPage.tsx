@@ -12,6 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { SimulationConfig } from "../simulations/types/simulationTypes";
+import { useTranslation } from "react-i18next";
 
 interface ExperimentDetailPageProps {
   config: SimulationConfig;
@@ -19,6 +20,7 @@ interface ExperimentDetailPageProps {
 
 const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const categoryColors = {
     physics: {
@@ -46,7 +48,33 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
     },
   };
 
-  const colors = categoryColors[config.category];
+  const colors = categoryColors[config.category as keyof typeof categoryColors];
+
+  // Translated content
+  const simName = t(`simulations.${config.id}.name`);
+  const simDesc = t(`simulations.${config.id}.description`);
+  const simLongDesc = t(`simulations.${config.id}.longDescription`);
+
+  // Safe handling of arrays and objects returned by t()
+  const objectives = t(`simulations.${config.id}.objectives`, {
+    returnObjects: true,
+  });
+  // Ensure objectives is an array, otherwise fallback to empty array
+  const objectivesList = Array.isArray(objectives) ? objectives : [];
+
+  const simulationDetails = t(`simulations.${config.id}.simulationDetails`, {
+    returnObjects: true,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const details =
+    typeof simulationDetails === "object" && simulationDetails !== null
+      ? (simulationDetails as any)
+      : {};
+
+  const keyConcepts = Array.isArray(details.keyConcepts)
+    ? details.keyConcepts
+    : [];
+  const controls = Array.isArray(details.controls) ? details.controls : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -66,9 +94,9 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="font-medium">
-              Back to{" "}
-              {config.category.charAt(0).toUpperCase() +
-                config.category.slice(1)}
+              {t("experiment_detail.back_to", {
+                category: t(`categories.${config.category}.name`),
+              })}
             </span>
           </Link>
 
@@ -84,16 +112,20 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                 </div>
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm">
                   <Clock className="w-4 h-4" />
-                  <span>{config.duration} minutes</span>
+                  <span>
+                    {t("experiment_detail.duration_value", {
+                      count: config.duration,
+                    })}
+                  </span>
                 </div>
               </div>
 
               <h1 className="text-5xl font-bold mb-4 leading-tight">
-                {config.name}
+                {simName}
               </h1>
 
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                {config.description}
+                {simDesc}
               </p>
 
               <button
@@ -101,7 +133,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                 className={`bg-gradient-to-r ${colors.button} text-white font-bold px-8 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center gap-3 text-lg group`}
               >
                 <Play className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                Launch Simulation
+                {t("experiment_detail.launch_simulation")}
                 <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
               </button>
             </div>
@@ -132,14 +164,16 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                 >
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {t("experiment_detail.overview")}
+                </h2>
               </div>
               <p className="text-gray-700 leading-relaxed text-lg">
-                {config.longDescription}
+                {simLongDesc}
               </p>
             </div>
 
-            {config.simulationDetails && (
+            {details.howItWorks && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div
@@ -148,73 +182,67 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800">
-                    How It Works
+                    {t("experiment_detail.how_it_works")}
                   </h2>
                 </div>
 
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                      Simulation Mechanics
+                      {t("experiment_detail.simulation_mechanics")}
                     </h3>
                     <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
-                      {config.simulationDetails.howItWorks}
+                      {details.howItWorks}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                      Key Concepts
+                      {t("experiment_detail.key_concepts")}
                     </h3>
                     <ul className="space-y-2">
-                      {config.simulationDetails.keyConcepts.map(
-                        (concept, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start gap-2 text-lg text-gray-700"
-                          >
-                            <div
-                              className={`w-2 h-2 bg-gradient-to-br ${colors.primary} rounded-full mt-2 flex-shrink-0`}
-                            />
-                            {concept}
-                          </li>
-                        )
-                      )}
+                      {keyConcepts.map((concept: string, index: number) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-2 text-lg text-gray-700"
+                        >
+                          <div
+                            className={`w-2 h-2 bg-gradient-to-br ${colors.primary} rounded-full mt-2 flex-shrink-0`}
+                          />
+                          {concept}
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                      Controls Guide
+                      {t("experiment_detail.controls_guide")}
                     </h3>
                     <ul className="space-y-3">
-                      {config.simulationDetails.controls.map(
-                        (control, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start gap-3 text-lg text-gray-700"
-                          >
-                            <div className="w-6 h-6 bg-gray-100 border border-gray-300 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                              {index + 1}
-                            </div>
-                            {control}
-                          </li>
-                        )
-                      )}
+                      {controls.map((control: string, index: number) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-3 text-lg text-gray-700"
+                        >
+                          <div className="w-6 h-6 bg-gray-100 border border-gray-300 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                            {index + 1}
+                          </div>
+                          {control}
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
-                  {config.simulationDetails.proTip && (
+                  {details.proTip && (
                     <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl border border-yellow-200 p-4">
                       <div className="flex items-start gap-3">
                         <Lightbulb className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                         <div>
                           <h4 className="font-semibold text-yellow-800 mb-1">
-                            Pro Tip
+                            {t("experiment_detail.pro_tip")}
                           </h4>
-                          <p className="text-yellow-700">
-                            {config.simulationDetails.proTip}
-                          </p>
+                          <p className="text-yellow-700">{details.proTip}</p>
                         </div>
                       </div>
                     </div>
@@ -232,11 +260,11 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   <Target className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Learning Objectives
+                  {t("experiment_detail.learning_objectives")}
                 </h2>
               </div>
               <div className="space-y-4">
-                {config.objectives.map((objective, index) => (
+                {objectivesList.map((objective: string, index: number) => (
                   <div key={index} className="flex items-start gap-4 group">
                     <div
                       className={`mt-1 w-6 h-6 bg-gradient-to-br ${colors.primary} rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}
@@ -258,14 +286,15 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   <AlertCircle className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Prerequisites
+                  {t("experiment_detail.prerequisites")}
                 </h2>
               </div>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start gap-3">
                   <span className="text-amber-600 mt-1">•</span>
                   <span className="text-lg">
-                    Basic understanding of {config.category} concepts
+                    Basic understanding of{" "}
+                    {t(`categories.${config.category}.name`)} concepts
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -290,7 +319,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   <Lightbulb className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  How to Use This Simulation
+                  {t("experiment_detail.how_to_use")}
                 </h2>
               </div>
               <div className="space-y-4">
@@ -299,7 +328,8 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                     1
                   </div>
                   <p className="text-gray-700 text-lg leading-relaxed">
-                    Click "Launch Simulation" to open the interactive experiment
+                    Click "{t("experiment_detail.launch_simulation")}" to open
+                    the interactive experiment
                   </p>
                 </div>
                 <div className="flex items-start gap-4">
@@ -336,7 +366,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
             {/* Quick Info Card */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-6">
               <h3 className="text-lg font-bold text-gray-800 mb-6">
-                Quick Info
+                {t("experiment_detail.quick_info")}
               </h3>
 
               <div className="space-y-5">
@@ -348,10 +378,12 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 font-medium">
-                      Duration
+                      {t("experiment_detail.duration")}
                     </p>
                     <p className="text-lg font-bold text-gray-800">
-                      {config.duration} minutes
+                      {t("experiment_detail.duration_value", {
+                        count: config.duration,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -364,7 +396,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 font-medium">
-                      Difficulty
+                      {t("experiment_detail.difficulty")}
                     </p>
                     <p className="text-lg font-bold text-gray-800 capitalize">
                       {config.difficulty}
@@ -380,10 +412,12 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 font-medium">
-                      Objectives
+                      {t("experiment_detail.objectives")}
                     </p>
                     <p className="text-lg font-bold text-gray-800">
-                      {config.objectives.length} learning goals
+                      {t("experiment_detail.objectives_count", {
+                        count: objectivesList.length,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -391,7 +425,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
 
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h4 className="text-sm font-semibold text-gray-600 mb-3">
-                  Topics Covered
+                  {t("experiment_detail.topics_covered")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {config.tags.map((tag, index) => (
@@ -410,7 +444,7 @@ const ExperimentDetailPage = ({ config }: ExperimentDetailPageProps) => {
                 className={`w-full mt-8 bg-gradient-to-r ${colors.button} text-white font-bold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 group`}
               >
                 <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                Start Experiment
+                {t("experiment_detail.launch_simulation")}
               </button>
             </div>
           </div>

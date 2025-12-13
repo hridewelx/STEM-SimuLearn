@@ -1,255 +1,241 @@
-import React from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  ArrowRight,
+  ArrowLeft,
   Minus,
+  Activity,
+  Beaker,
   Thermometer,
   Gauge,
-  FlaskConical,
-  Activity,
-  Info
-} from 'lucide-react';
-import { REACTIONS, EquilibriumReaction } from './types';
+  Scale,
+} from "lucide-react";
+import { LeChatelierAnalyticsData } from "./types";
+import { useTranslation } from "react-i18next";
 
 interface LeChatelierAnalyticsProps {
-  params: {
-    reaction: string;
-    temperature: number;
-    pressure: number;
-    volume: number;
-  };
-  equilibriumState: {
-    Q: number;
-    Kc: number;
-    position: 'left' | 'right' | 'equilibrium';
-    shiftDirection: 'forward' | 'reverse' | 'none';
-    shiftReason: string;
-  };
-  concentrations: {
-    reactants: number[];
-    products: number[];
-  };
-  stressHistory: Array<{
-    type: string;
-    action: string;
-    timestamp: number;
-  }>;
+  analytics: LeChatelierAnalyticsData;
 }
 
-const LeChatelierAnalytics: React.FC<LeChatelierAnalyticsProps> = ({
-  params,
-  equilibriumState,
-  concentrations,
-  stressHistory,
-}) => {
-  const currentReaction: EquilibriumReaction | undefined = REACTIONS.find(r => r.id === params.reaction);
-
-  const totalReactants = concentrations.reactants.reduce((a, b) => a + b, 0);
-  const totalProducts = concentrations.products.reduce((a, b) => a + b, 0);
+const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
+  const { t } = useTranslation();
 
   const getShiftIcon = () => {
-    switch (equilibriumState.shiftDirection) {
-      case 'forward':
-        return <TrendingUp className="w-5 h-5 text-green-400" />;
-      case 'reverse':
-        return <TrendingDown className="w-5 h-5 text-red-400" />;
+    switch (analytics.shiftDirection) {
+      case "forward":
+        return <ArrowRight className="w-5 h-5 text-orange-400" />;
+      case "reverse":
+        return <ArrowLeft className="w-5 h-5 text-blue-400" />;
       default:
-        return <Minus className="w-5 h-5 text-yellow-400" />;
+        return <Minus className="w-5 h-5 text-green-400" />;
     }
   };
 
-  const getPositionColor = () => {
-    switch (equilibriumState.position) {
-      case 'left':
-        return 'text-blue-400';
-      case 'right':
-        return 'text-red-400';
+  const getShiftText = () => {
+    switch (analytics.shiftDirection) {
+      case "forward":
+        return t("le_chatelier.analytics.shifting_products");
+      case "reverse":
+        return t("le_chatelier.analytics.shifting_reactants");
       default:
-        return 'text-yellow-400';
+        return t("le_chatelier.analytics.at_equilibrium");
+    }
+  };
+
+  const getShiftColor = () => {
+    switch (analytics.shiftDirection) {
+      case "forward":
+        return "from-orange-500/20 to-amber-500/20 border-orange-500/50";
+      case "reverse":
+        return "from-blue-500/20 to-cyan-500/20 border-blue-500/50";
+      default:
+        return "from-green-500/20 to-emerald-500/20 border-green-500/50";
     }
   };
 
   return (
     <div className="space-y-4">
       {/* Equilibrium Status */}
-      <div className="bg-gray-800/50 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-          <Activity className="w-4 h-4" />
-          Equilibrium Status
+      <div
+        className={`p-4 rounded-xl bg-gradient-to-r ${getShiftColor()} border`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {getShiftIcon()}
+            <div>
+              <p className="text-sm font-semibold text-white">
+                {getShiftText()}
+              </p>
+              <p className="text-xs text-gray-400">
+                {analytics.isAtEquilibrium
+                  ? t("le_chatelier.analytics.system_balanced")
+                  : t("le_chatelier.analytics.system_adjusting")}
+              </p>
+            </div>
+          </div>
+          <div
+            className={`w-3 h-3 rounded-full ${
+              analytics.isAtEquilibrium
+                ? "bg-green-400"
+                : "bg-yellow-400 animate-pulse"
+            }`}
+          />
+        </div>
+      </div>
+
+      {/* Q vs K Comparison */}
+      <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-3">
+          <Scale className="w-4 h-4 text-purple-400" />
+          {t("le_chatelier.analytics.equilibrium_analysis")}
         </h3>
-        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
+            <p className="text-xs text-cyan-400 mb-1">
+              {t("le_chatelier.analytics.reaction_quotient")}
+            </p>
+            <p className="text-xl font-bold text-white">
+              Q ={" "}
+              {analytics.reactionQuotient === Infinity
+                ? "∞"
+                : analytics.reactionQuotient.toFixed(2)}
+            </p>
+          </div>
+          <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+            <p className="text-xs text-purple-400 mb-1">
+              {t("le_chatelier.analytics.equilibrium_constant")}
+            </p>
+            <p className="text-xl font-bold text-white">
+              K = {analytics.equilibriumConstant.toFixed(2)}
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 p-2 rounded-lg bg-gray-900/50">
+          <p className="text-xs text-gray-400 text-center">
+            {analytics.reactionQuotient < analytics.equilibriumConstant
+              ? t("le_chatelier.analytics.q_less_k")
+              : analytics.reactionQuotient > analytics.equilibriumConstant
+              ? t("le_chatelier.analytics.q_greater_k")
+              : t("le_chatelier.analytics.q_equal_k")}
+          </p>
+        </div>
+      </div>
+
+      {/* Particle Counts */}
+      <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-3">
+          <Beaker className="w-4 h-4 text-green-400" />
+          {t("le_chatelier.analytics.particle_distribution")}
+        </h3>
+
+        {/* Reactants Bar */}
+        <div className="space-y-2 mb-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-blue-400">
+              {t("le_chatelier.controls.reactants")}
+            </span>
+            <span className="text-white font-medium">
+              {analytics.reactantCount} ({analytics.percentReactants.toFixed(1)}
+              %)
+            </span>
+          </div>
+          <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-300"
+              style={{ width: `${analytics.percentReactants}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Products Bar */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-orange-400">
+              {t("le_chatelier.controls.products")}
+            </span>
+            <span className="text-white font-medium">
+              {analytics.productCount} ({analytics.percentProducts.toFixed(1)}%)
+            </span>
+          </div>
+          <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full transition-all duration-300"
+              style={{ width: `${analytics.percentProducts}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Reaction Rates */}
+      <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-3">
+          <Activity className="w-4 h-4 text-yellow-400" />
+          {t("le_chatelier.analytics.reaction_rates")}
+        </h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-400">
+              {t("le_chatelier.analytics.forward_rate")}
+            </span>
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-orange-500 rounded-full transition-all"
+                  style={{ width: `${analytics.forwardReactionRate * 1000}%` }}
+                />
+              </div>
+              <span className="text-xs text-orange-400 w-10">
+                {(analytics.forwardReactionRate * 100).toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-400">
+              {t("le_chatelier.analytics.reverse_rate")}
+            </span>
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all"
+                  style={{ width: `${analytics.reverseReactionRate * 1000}%` }}
+                />
+              </div>
+              <span className="text-xs text-blue-400 w-10">
+                {(analytics.reverseReactionRate * 100).toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Current Conditions */}
+      <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
+        <h3 className="text-sm font-medium text-gray-300 mb-3">
+          {t("le_chatelier.analytics.current_conditions")}
+        </h3>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-gray-900/50 rounded p-3">
-            <p className="text-xs text-gray-400 mb-1">Reaction Quotient (Q)</p>
-            <p className="text-lg font-mono text-cyan-400">
-              {equilibriumState.Q.toExponential(3)}
-            </p>
-          </div>
-          <div className="bg-gray-900/50 rounded p-3">
-            <p className="text-xs text-gray-400 mb-1">Equilibrium Constant (K)</p>
-            <p className="text-lg font-mono text-purple-400">
-              {equilibriumState.Kc.toExponential(3)}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-3 p-3 bg-gray-900/50 rounded flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-400 mb-1">System Status</p>
-            <p className={`font-medium ${getPositionColor()}`}>
-              {equilibriumState.Q < equilibriumState.Kc * 0.9 
-                ? 'Q < K: Shifting Forward →'
-                : equilibriumState.Q > equilibriumState.Kc * 1.1
-                ? 'Q > K: Shifting Reverse ←'
-                : 'At Equilibrium ⇌'}
-            </p>
-          </div>
-          {getShiftIcon()}
-        </div>
-
-        {equilibriumState.shiftReason && (
-          <div className="mt-2 p-2 bg-yellow-900/30 rounded border border-yellow-700/50">
-            <p className="text-xs text-yellow-300 flex items-center gap-1">
-              <Info className="w-3 h-3" />
-              {equilibriumState.shiftReason}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Concentrations */}
-      <div className="bg-gray-800/50 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-          <FlaskConical className="w-4 h-4" />
-          Concentrations (M)
-        </h3>
-
-        <div className="space-y-2">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">Reactants</p>
-          {currentReaction?.reactants.map((name, idx) => (
-            <div key={`r-${idx}`} className="flex items-center justify-between bg-gray-900/50 rounded px-3 py-2">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: currentReaction.colors.reactants[idx] }}
-                />
-                <span className="text-sm text-gray-300">{name}</span>
-              </div>
-              <span className="font-mono text-blue-400">
-                {(concentrations.reactants[idx] || 0).toFixed(3)}
-              </span>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/30">
+            <Thermometer className="w-4 h-4 text-red-400" />
+            <div>
+              <p className="text-xs text-gray-400">
+                {t("le_chatelier.controls.temperature")}
+              </p>
+              <p className="text-sm font-bold text-white">
+                {analytics.temperature} K
+              </p>
             </div>
-          ))}
-
-          <p className="text-xs text-gray-500 uppercase tracking-wide mt-3">Products</p>
-          {currentReaction?.products.map((name, idx) => (
-            <div key={`p-${idx}`} className="flex items-center justify-between bg-gray-900/50 rounded px-3 py-2">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: currentReaction.colors.products[idx] }}
-                />
-                <span className="text-sm text-gray-300">{name}</span>
-              </div>
-              <span className="font-mono text-red-400">
-                {(concentrations.products[idx] || 0).toFixed(3)}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Ratio bar */}
-        <div className="mt-3">
-          <p className="text-xs text-gray-400 mb-1">Reactants ⇌ Products Ratio</p>
-          <div className="h-3 bg-gray-700 rounded-full overflow-hidden flex">
-            <div 
-              className="bg-blue-500 transition-all duration-500"
-              style={{ width: `${(totalReactants / Math.max(0.1, totalReactants + totalProducts)) * 100}%` }}
-            />
-            <div 
-              className="bg-red-500 transition-all duration-500"
-              style={{ width: `${(totalProducts / Math.max(0.1, totalReactants + totalProducts)) * 100}%` }}
-            />
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>{((totalReactants / Math.max(0.1, totalReactants + totalProducts)) * 100).toFixed(0)}%</span>
-            <span>{((totalProducts / Math.max(0.1, totalReactants + totalProducts)) * 100).toFixed(0)}%</span>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+            <Gauge className="w-4 h-4 text-yellow-400" />
+            <div>
+              <p className="text-xs text-gray-400">
+                {t("le_chatelier.controls.pressure")}
+              </p>
+              <p className="text-sm font-bold text-white">
+                {analytics.pressure.toFixed(1)} atm
+              </p>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Conditions */}
-      <div className="bg-gray-800/50 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3">Current Conditions</h3>
-        
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400 flex items-center gap-2">
-              <Thermometer className="w-4 h-4 text-orange-400" />
-              Temperature
-            </span>
-            <span className="font-mono text-orange-400">{params.temperature} K</span>
-          </div>
-          
-          {currentReaction?.hasGas && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400 flex items-center gap-2">
-                <Gauge className="w-4 h-4 text-purple-400" />
-                Pressure
-              </span>
-              <span className="font-mono text-purple-400">{params.pressure} atm</span>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400 flex items-center gap-2">
-              <FlaskConical className="w-4 h-4 text-cyan-400" />
-              Volume
-            </span>
-            <span className="font-mono text-cyan-400">{params.volume} L</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Reaction Info */}
-      {currentReaction && (
-        <div className="bg-gray-800/50 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">Reaction Properties</h3>
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Type:</span>
-              <span className={currentReaction.deltaH < 0 ? 'text-red-400' : 'text-blue-400'}>
-                {currentReaction.deltaH < 0 ? 'Exothermic' : 'Endothermic'}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">ΔH:</span>
-              <span className="text-gray-300">{currentReaction.deltaH} kJ/mol</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Gas moles (L→R):</span>
-              <span className="text-gray-300">
-                {currentReaction.reactantCoeffs.reduce((a, b) => a + b, 0)} → {currentReaction.productCoeffs.reduce((a, b) => a + b, 0)}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stress History */}
-      {stressHistory.length > 0 && (
-        <div className="bg-gray-800/50 rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-gray-300 mb-2">Recent Stresses</h3>
-          <div className="space-y-1 max-h-32 overflow-y-auto">
-            {stressHistory.slice(-5).reverse().map((stress, idx) => (
-              <div key={idx} className="text-xs text-gray-400 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                {stress.type}: {stress.action}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

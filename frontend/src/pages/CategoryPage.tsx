@@ -1,4 +1,4 @@
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -10,18 +10,26 @@ import {
   Atom,
   Sparkles,
 } from "lucide-react";
-import { getSimulationsByCategory, categories, comingSoonSimulations } from "../simulations/registry";
+import {
+  getSimulationsByCategory,
+  categories,
+  comingSoonSimulations,
+} from "../simulations/registry";
+import { useTranslation } from "react-i18next";
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
-  
+  const { t } = useTranslation();
+
   if (!category || !categories[category]) {
     return <Navigate to="/simulations" replace />;
   }
 
   const categoryInfo = categories[category];
   const categorySimulations = getSimulationsByCategory(category);
-  const comingSoonSims = comingSoonSimulations.filter((sim) => sim.category === category);
+  const comingSoonSims = comingSoonSimulations.filter(
+    (sim) => sim.category === category
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-indigo-50/80 relative overflow-hidden">
@@ -42,14 +50,16 @@ const CategoryPage = () => {
                 <div className="flex items-center gap-3">
                   <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" />
                   <span className="font-medium text-gray-700 group-hover:text-purple-700">
-                    All Subjects
+                    {t("category_page.all_subjects")}
                   </span>
                 </div>
               </Link>
 
               <div className="flex items-center gap-6">
                 <div className="relative">
-                  <div className={`w-20 h-20 bg-gradient-to-br ${categoryInfo.gradient} rounded-2xl flex items-center justify-center shadow-lg`}>
+                  <div
+                    className={`w-20 h-20 bg-gradient-to-br ${categoryInfo.gradient} rounded-2xl flex items-center justify-center shadow-lg`}
+                  >
                     <Beaker className="w-10 h-10 text-white" />
                   </div>
                   <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
@@ -58,23 +68,29 @@ const CategoryPage = () => {
                 </div>
 
                 <div>
-                  <h1 className={`text-4xl font-bold bg-gradient-to-r ${categoryInfo.gradient} bg-clip-text text-transparent mb-2`}>
-                    {categoryInfo.name}
+                  <h1
+                    className={`text-4xl font-bold bg-gradient-to-r ${categoryInfo.gradient} bg-clip-text text-transparent mb-2`}
+                  >
+                    {t(`categories.${categoryInfo.id}.name`)}
                   </h1>
                   <p className="text-gray-600 text-lg max-w-2xl leading-relaxed">
-                    {categoryInfo.description}
+                    {t(`categories.${categoryInfo.id}.description`)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className={`bg-gradient-to-r ${categoryInfo.gradient} text-white px-6 py-3 rounded-2xl shadow-lg`}>
+            <div
+              className={`bg-gradient-to-r ${categoryInfo.gradient} text-white px-6 py-3 rounded-2xl shadow-lg`}
+            >
               <div className="text-center">
                 <div className="text-2xl font-bold">
                   {categorySimulations.length}
                 </div>
                 <div className="text-sm opacity-90">
-                  {categorySimulations.length === 1 ? "Active Experiment" : "Active Experiments"}
+                  {categorySimulations.length === 1
+                    ? t("category_page.active_experiment_one")
+                    : t("category_page.active_experiment_other")}
                 </div>
               </div>
             </div>
@@ -88,13 +104,17 @@ const CategoryPage = () => {
         {categorySimulations.length > 0 && (
           <div className="mb-20">
             <div className="flex items-center gap-4 mb-8">
-              <div className={`w-1 h-8 bg-gradient-to-b ${categoryInfo.gradient} rounded-full`} />
+              <div
+                className={`w-1 h-8 bg-gradient-to-b ${categoryInfo.gradient} rounded-full`}
+              />
               <div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                  Laboratory Experiments
+                  {t("category_page.laboratory_experiments")}
                 </h2>
                 <p className="text-gray-600">
-                  Interactive simulations to explore {category} principles
+                  {t("category_page.experiments_desc", {
+                    category: t(`categories.${category}.name`),
+                  })}
                 </p>
               </div>
             </div>
@@ -107,10 +127,14 @@ const CategoryPage = () => {
                   className="group relative bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden"
                 >
                   {/* Gradient Border Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${categoryInfo.gradient} rounded-3xl opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${categoryInfo.gradient} rounded-3xl opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+                  />
 
                   {/* Thumbnail */}
-                  <div className={`h-52 bg-gradient-to-br ${categoryInfo.gradient} relative overflow-hidden`}>
+                  <div
+                    className={`h-52 bg-gradient-to-br ${categoryInfo.gradient} relative overflow-hidden`}
+                  >
                     <div className="absolute inset-0 bg-grid-white/10" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="relative">
@@ -129,7 +153,8 @@ const CategoryPage = () => {
                             : "bg-pink-100 text-pink-800 border-pink-200"
                         }`}
                       >
-                        {sim.difficulty.charAt(0).toUpperCase() + sim.difficulty.slice(1)}
+                        {sim.difficulty.charAt(0).toUpperCase() +
+                          sim.difficulty.slice(1)}
                       </div>
                     </div>
                   </div>
@@ -137,13 +162,13 @@ const CategoryPage = () => {
                   <div className="card-body p-6">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-xl font-bold text-gray-800 group-hover:text-purple-700 transition-colors leading-tight">
-                        {sim.name}
+                        {t(`simulations.${sim.id}.name`)}
                       </h3>
                       <Sparkles className="w-5 h-5 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
 
                     <p className="text-gray-600 text-sm mb-5 leading-relaxed line-clamp-2">
-                      {sim.description}
+                      {t(`simulations.${sim.id}.description`)}
                     </p>
 
                     {/* Meta Info */}
@@ -151,11 +176,19 @@ const CategoryPage = () => {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4" />
-                          <span>{sim.duration} min</span>
+                          <span>
+                            {t("experiment_detail.duration_value", {
+                              count: sim.duration,
+                            })}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Target className="w-4 h-4" />
-                          <span>{sim.objectives.length} objectives</span>
+                          <span>
+                            {t("experiment_detail.objectives_count", {
+                              count: sim.objectives.length,
+                            })}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -169,7 +202,10 @@ const CategoryPage = () => {
                         >
                           {tag
                             .split(" ")
-                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
                             .join(" ")}
                         </span>
                       ))}
@@ -177,8 +213,10 @@ const CategoryPage = () => {
 
                     {/* CTA */}
                     <div className="card-actions">
-                      <button className={`w-full bg-gradient-to-r ${categoryInfo.gradient} hover:opacity-90 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-3 group/btn`}>
-                        <span>Start Experiment</span>
+                      <button
+                        className={`w-full bg-gradient-to-r ${categoryInfo.gradient} hover:opacity-90 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-3 group/btn`}
+                      >
+                        <span>{t("category_page.start_experiment")}</span>
                         <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
                       </button>
                     </div>
@@ -196,10 +234,10 @@ const CategoryPage = () => {
               <div className="w-1 h-8 bg-gradient-to-b from-gray-400 to-gray-500 rounded-full" />
               <div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                  Future Experiments
+                  {t("category_page.future_experiments")}
                 </h2>
                 <p className="text-gray-600">
-                  Exciting new simulations in development
+                  {t("category_page.future_desc")}
                 </p>
               </div>
             </div>
@@ -214,7 +252,7 @@ const CategoryPage = () => {
 
                   <div className="absolute top-4 right-4 z-20">
                     <div className="bg-gray-500/80 text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm border border-gray-600/30">
-                      Coming Soon
+                      {t("category_page.coming_soon")}
                     </div>
                   </div>
 
@@ -227,14 +265,14 @@ const CategoryPage = () => {
 
                   <div className="card-body p-6 relative z-10">
                     <h3 className="text-xl font-bold text-gray-500 mb-3">
-                      {sim.name}
+                      {t(`simulations.${sim.id}.name`)}
                     </h3>
                     <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                      {sim.description}
+                      {t(`simulations.${sim.id}.description`)}
                     </p>
 
                     <button className="w-full bg-gray-400 text-white font-semibold py-3.5 rounded-xl cursor-not-allowed flex items-center justify-center gap-3">
-                      <span>In Development</span>
+                      <span>{t("category_page.in_development")}</span>
                       <Atom className="w-4 h-4 animate-spin" />
                     </button>
                   </div>
@@ -247,20 +285,26 @@ const CategoryPage = () => {
         {/* Empty State */}
         {categorySimulations.length === 0 && comingSoonSims.length === 0 && (
           <div className="text-center py-24">
-            <div className={`w-32 h-32 bg-gradient-to-br ${categoryInfo.gradient} opacity-20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg`}>
+            <div
+              className={`w-32 h-32 bg-gradient-to-br ${categoryInfo.gradient} opacity-20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg`}
+            >
               <Beaker className="w-16 h-16 text-gray-600" />
             </div>
             <h3 className="text-3xl font-bold text-gray-800 mb-4">
-              {categoryInfo.name} Lab Under Construction
+              {t("category_page.under_construction", {
+                category: t(`categories.${categoryInfo.id}.name`),
+              })}
             </h3>
             <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto leading-relaxed">
-              We're preparing exciting {category} experiments for you. Check back soon!
+              {t("category_page.preparing_msg", {
+                category: t(`categories.${categoryInfo.id}.name`),
+              })}
             </p>
             <Link
               to="/simulations"
               className={`bg-gradient-to-r ${categoryInfo.gradient} text-white font-semibold px-8 py-4 rounded-2xl hover:shadow-xl transition-all duration-300 inline-flex items-center gap-3`}
             >
-              Explore Other Subjects
+              {t("category_page.explore_other")}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

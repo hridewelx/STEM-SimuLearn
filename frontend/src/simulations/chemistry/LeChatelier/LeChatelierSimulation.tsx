@@ -1,265 +1,78 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Maximize2, Minimize2, Settings, BarChart3, Play, Pause, RotateCcw, Scale } from 'lucide-react';
-import LeChatelierControls from './LeChatelierControls';
-import LeChatelierCanvas from './LeChatelierCanvas';
-import LeChatelierAnalytics from './LeChatelierAnalytics';
-import AITutorPanel from '../../../components/AITutorPanel';
-import { REACTIONS, EquilibriumReaction } from './types';
-import { defaultLeChatelierParams, LeChatelierConfig } from './config';
+import { useState, useCallback } from "react";
+import {
+  Settings,
+  BarChart3,
+  Maximize2,
+  Minimize2,
+  Play,
+  Pause,
+  RotateCcw,
+  Scale,
+} from "lucide-react";
+import LeChatelierCanvas from "./LeChatelierCanvas";
+import LeChatelierControls from "./LeChatelierControls";
+import LeChatelierAnalytics from "./LeChatelierAnalytics";
+import AITutorPanel from "../../../components/AITutorPanel";
+import { LeChatelierParams, LeChatelierAnalyticsData } from "./types";
+import { defaultLeChatelierParams, LeChatelierConfig } from "./config";
+import { useTranslation } from "react-i18next";
 
-const LeChatelierSimulation: React.FC = () => {
-  const [params, setParams] = useState(defaultLeChatelierParams);
+const LeChatelierSimulation = () => {
+  const { t } = useTranslation();
+  const [params, setParams] = useState<LeChatelierParams>(
+    defaultLeChatelierParams
+  );
   const [isRunning, setIsRunning] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [mobilePanel, setMobilePanel] = useState<'none' | 'controls' | 'analytics'>('none');
-  const canvasContainerRef = useRef<HTMLDivElement>(null);
-  
-  const [concentrations, setConcentrations] = useState({
-    reactants: [0.5, 0.5],
-    products: [0.1, 0.1],
+  const [mobilePanel, setMobilePanel] = useState<
+    "none" | "controls" | "analytics"
+  >("none");
+  const [analytics, setAnalytics] = useState<LeChatelierAnalyticsData>({
+    reactantCount: 50,
+    productCount: 50,
+    totalParticles: 100,
+    equilibriumConstant: 1,
+    reactionQuotient: 1,
+    shiftDirection: "none",
+    forwardReactionRate: 0.02,
+    reverseReactionRate: 0.02,
+    temperature: 300,
+    pressure: 1,
+    percentReactants: 50,
+    percentProducts: 50,
+    isAtEquilibrium: true,
   });
 
-  const [equilibriumState, setEquilibriumState] = useState({
-    Q: 0,
-    Kc: 0.0059,
-    position: 'equilibrium' as 'left' | 'right' | 'equilibrium',
-    shiftDirection: 'none' as 'forward' | 'reverse' | 'none',
-    shiftReason: '',
-  });
-
-  const [stressHistory, setStressHistory] = useState<Array<{
-    type: string;
-    action: string;
-    timestamp: number;
-  }>>([]);
-
-  const prevParamsRef = useRef(params);
-
-  // Get current reaction
-  const currentReaction: EquilibriumReaction | undefined = REACTIONS.find(r => r.id === params.reaction);
-
-  // Calculate K at current temperature using Van't Hoff equation
-  const calculateKAtTemp = useCallback((baseK: number, deltaH: number, baseTemp: number, currentTemp: number): number => {
-    const R = 8.314; // J/(mol·K)
-    const deltaHJ = deltaH * 1000; // Convert kJ to J
-    const exponent = (-deltaHJ / R) * ((1 / currentTemp) - (1 / baseTemp));
-    return baseK * Math.exp(exponent);
-  }, []);
-
-  // Calculate reaction quotient Q
-  const calculateQ = useCallback((reaction: EquilibriumReaction, concs: typeof concentrations): number => {
-    let numerator = 1;
-    let denominator = 1;
-
-    // Products in numerator
-    concs.products.forEach((c, idx) => {
-      const coeff = reaction.productCoeffs[idx] || 1;
-      numerator *= Math.pow(Math.max(0.001, c), coeff);
-    });
-
-    // Reactants in denominator
-    concs.reactants.forEach((c, idx) => {
-      const coeff = reaction.reactantCoeffs[idx] || 1;
-      denominator *= Math.pow(Math.max(0.001, c), coeff);
-    });
-
-    return numerator / denominator;
-  }, []);
-
-  // Update equilibrium state
-  useEffect(() => {
-    if (!currentReaction) return;
-
-    const Kc = calculateKAtTemp(currentReaction.Kc, currentReaction.deltaH, 298, params.temperature);
-    const Q = calculateQ(currentReaction, concentrations);
-
-    let shiftDirection: 'forward' | 'reverse' | 'none' = 'none';
-    let position: 'left' | 'right' | 'equilibrium' = 'equilibrium';
-    let shiftReason = '';
-
-    // Determine shift based on Q vs K
-    if (Q < Kc * 0.9) {
-      shiftDirection = 'forward';
-      position = 'left';
-    } else if (Q > Kc * 1.1) {
-      shiftDirection = 'reverse';
-      position = 'right';
-    }
-
-    // Determine reason for shift
-    const prevParams = prevParamsRef.current;
-    if (prevParams.temperature !== params.temperature) {
-      if (params.temperature > prevParams.temperature) {
-        shiftReason = currentReaction.deltaH > 0 
-          ? 'Temperature ↑: Endothermic reaction shifts FORWARD'
-          : 'Temperature ↑: Exothermic reaction shifts REVERSE';
-      } else {
-        shiftReason = currentReaction.deltaH > 0
-          ? 'Temperature ↓: Endothermic reaction shifts REVERSE'
-          : 'Temperature ↓: Exothermic reaction shifts FORWARD';
-      }
-    } else if (prevParams.pressure !== params.pressure && currentReaction.hasGas) {
-      const reactantMoles = currentReaction.reactantCoeffs.reduce((a, b) => a + b, 0);
-      const productMoles = currentReaction.productCoeffs.reduce((a, b) => a + b, 0);
-      if (params.pressure > prevParams.pressure) {
-        if (reactantMoles > productMoles) {
-          shiftReason = 'Pressure ↑: Shifts toward PRODUCTS (fewer moles)';
-        } else if (productMoles > reactantMoles) {
-          shiftReason = 'Pressure ↑: Shifts toward REACTANTS (fewer moles)';
-        } else {
-          shiftReason = 'Pressure ↑: No shift (equal moles on both sides)';
-        }
-      } else {
-        if (reactantMoles > productMoles) {
-          shiftReason = 'Pressure ↓: Shifts toward REACTANTS (more moles)';
-        } else if (productMoles > reactantMoles) {
-          shiftReason = 'Pressure ↓: Shifts toward PRODUCTS (more moles)';
-        } else {
-          shiftReason = 'Pressure ↓: No shift (equal moles on both sides)';
-        }
-      }
-    }
-
-    prevParamsRef.current = params;
-
-    setEquilibriumState({
-      Q,
-      Kc,
-      position,
-      shiftDirection,
-      shiftReason,
-    });
-  }, [params, concentrations, currentReaction, calculateKAtTemp, calculateQ]);
-
-  // Simulate equilibrium shift over time
-  useEffect(() => {
-    if (!isRunning || !currentReaction) return;
-
-    const interval = setInterval(() => {
-      setConcentrations(prev => {
-        const newConcs = { ...prev, reactants: [...prev.reactants], products: [...prev.products] };
-        const Q = calculateQ(currentReaction, prev);
-        const Kc = calculateKAtTemp(currentReaction.Kc, currentReaction.deltaH, 298, params.temperature);
-
-        // Rate of shift
-        const shiftRate = 0.002;
-
-        if (Q < Kc * 0.95) {
-          // Shift forward: reactants → products
-          currentReaction.reactants.forEach((_, idx) => {
-            const coeff = currentReaction.reactantCoeffs[idx] || 1;
-            newConcs.reactants[idx] = Math.max(0.01, newConcs.reactants[idx] - shiftRate * coeff);
-          });
-          currentReaction.products.forEach((_, idx) => {
-            const coeff = currentReaction.productCoeffs[idx] || 1;
-            newConcs.products[idx] = Math.min(3, newConcs.products[idx] + shiftRate * coeff);
-          });
-        } else if (Q > Kc * 1.05) {
-          // Shift reverse: products → reactants
-          currentReaction.reactants.forEach((_, idx) => {
-            const coeff = currentReaction.reactantCoeffs[idx] || 1;
-            newConcs.reactants[idx] = Math.min(3, newConcs.reactants[idx] + shiftRate * coeff);
-          });
-          currentReaction.products.forEach((_, idx) => {
-            const coeff = currentReaction.productCoeffs[idx] || 1;
-            newConcs.products[idx] = Math.max(0.01, newConcs.products[idx] - shiftRate * coeff);
-          });
-        }
-
-        // Apply pressure effect for gas reactions
-        if (currentReaction.hasGas && params.pressure !== 1) {
-          const reactantMoles = currentReaction.reactantCoeffs.reduce((a, b) => a + b, 0);
-          const productMoles = currentReaction.productCoeffs.reduce((a, b) => a + b, 0);
-          const pressureEffect = (params.pressure - 1) * 0.0005;
-
-          if (reactantMoles > productMoles) {
-            // High pressure favors products
-            newConcs.reactants.forEach((_, idx) => {
-              newConcs.reactants[idx] = Math.max(0.01, newConcs.reactants[idx] - pressureEffect);
-            });
-            newConcs.products.forEach((_, idx) => {
-              newConcs.products[idx] = Math.min(3, newConcs.products[idx] + pressureEffect);
-            });
-          } else if (productMoles > reactantMoles) {
-            // High pressure favors reactants
-            newConcs.reactants.forEach((_, idx) => {
-              newConcs.reactants[idx] = Math.min(3, newConcs.reactants[idx] + pressureEffect);
-            });
-            newConcs.products.forEach((_, idx) => {
-              newConcs.products[idx] = Math.max(0.01, newConcs.products[idx] - pressureEffect);
-            });
-          }
-        }
-
-        return newConcs;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [isRunning, currentReaction, params, calculateQ, calculateKAtTemp]);
-
-  // Handle adding stress
-  const handleAddStress = (type: 'reactant' | 'product', action: 'add' | 'remove', index: number) => {
-    const delta = action === 'add' ? 0.2 : -0.15;
-    
-    setConcentrations(prev => {
-      const newConcs = { ...prev, reactants: [...prev.reactants], products: [...prev.products] };
-      
-      if (type === 'reactant') {
-        newConcs.reactants[index] = Math.max(0.01, Math.min(3, (newConcs.reactants[index] || 0) + delta));
-      } else {
-        newConcs.products[index] = Math.max(0.01, Math.min(3, (newConcs.products[index] || 0) + delta));
-      }
-      
-      return newConcs;
-    });
-
-    // Update stress reason
-    const speciesName = type === 'reactant' 
-      ? currentReaction?.reactants[index] 
-      : currentReaction?.products[index];
-    
-    const reason = action === 'add'
-      ? `Added ${speciesName}: System shifts ${type === 'reactant' ? 'FORWARD' : 'REVERSE'}`
-      : `Removed ${speciesName}: System shifts ${type === 'reactant' ? 'REVERSE' : 'FORWARD'}`;
-
-    setEquilibriumState(prev => ({ ...prev, shiftReason: reason }));
-
-    setStressHistory(prev => [...prev, {
-      type: `${type} (${speciesName})`,
-      action: action === 'add' ? 'Added' : 'Removed',
-      timestamp: Date.now(),
-    }]);
+  const handleParamsChange = (newParams: Partial<LeChatelierParams>) => {
+    setParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Reset simulation
   const handleReset = () => {
-    if (!currentReaction) return;
-    
     setIsRunning(false);
-    setConcentrations({
-      reactants: currentReaction.reactants.map(() => 0.5),
-      products: currentReaction.products.map(() => 0.1),
+    setParams(defaultLeChatelierParams);
+    setAnalytics({
+      reactantCount: 50,
+      productCount: 50,
+      totalParticles: 100,
+      equilibriumConstant: 1,
+      reactionQuotient: 1,
+      shiftDirection: "none",
+      forwardReactionRate: 0.02,
+      reverseReactionRate: 0.02,
+      temperature: 300,
+      pressure: 1,
+      percentReactants: 50,
+      percentProducts: 50,
+      isAtEquilibrium: true,
     });
-    setParams(prev => ({ ...prev, temperature: 298, pressure: 1, volume: 1 }));
-    setStressHistory([]);
-    setEquilibriumState(prev => ({ ...prev, shiftReason: '' }));
   };
 
-  // Handle reaction change
-  useEffect(() => {
-    if (!currentReaction) return;
-    setConcentrations({
-      reactants: currentReaction.reactants.map(() => 0.5),
-      products: currentReaction.products.map(() => 0.1),
-    });
-    setStressHistory([]);
-  }, [params.reaction]);
-
-  // Fullscreen toggle
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
+  const handleAnalyticsUpdate = useCallback(
+    (data: LeChatelierAnalyticsData) => {
+      setAnalytics(data);
+    },
+    []
+  );
 
   const simulationData = {
     simulationId: LeChatelierConfig.id,
@@ -267,12 +80,13 @@ const LeChatelierSimulation: React.FC = () => {
     state: {
       params,
       isRunning,
-      equilibriumState,
-      concentrations,
+      analytics,
     },
     metadata: {
-      name: LeChatelierConfig.name,
-      objectives: LeChatelierConfig.objectives,
+      name: t(`simulations.${LeChatelierConfig.id}.name`), // Use translated name
+      objectives: t(`simulations.${LeChatelierConfig.id}.objectives`, {
+        returnObjects: true,
+      }) as string[], // Use translated objectives
       tags: LeChatelierConfig.tags,
     },
   };
@@ -282,25 +96,66 @@ const LeChatelierSimulation: React.FC = () => {
       {/* Header Bar */}
       <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl p-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Title */}
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
-              <Scale className="w-5 h-5 text-blue-400" />
+            <div className="p-2 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
+              <Scale className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Le Chatelier's Principle</h1>
-              <p className="text-xs text-gray-400">Equilibrium & Stress Response</p>
+              <h2 className="text-lg font-semibold text-white">
+                {t("le_chatelier.title")}
+              </h2>
+              <p className="text-xs text-gray-400">
+                {t("le_chatelier.subtitle")}
+              </p>
             </div>
           </div>
 
-          {/* Status Indicator */}
+          {/* Status Indicator - MORE PROMINENT */}
           <div className="flex items-center gap-3">
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
-              isRunning 
-                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                : 'bg-gray-700/50 text-gray-400 border border-gray-600/30'
-            }`}>
-              <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
-              {isRunning ? 'Running' : 'Ready'}
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+                isRunning
+                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                  : "bg-gray-700/50 text-gray-400 border border-gray-600/30"
+              }`}
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isRunning ? "bg-green-400 animate-pulse" : "bg-gray-500"
+                }`}
+              />
+              {isRunning
+                ? t("le_chatelier.status.running")
+                : t("le_chatelier.status.ready")}
+            </div>
+
+            {/* LARGE PROMINENT STATUS */}
+            <div
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+                analytics.shiftDirection === "forward"
+                  ? "bg-gradient-to-r from-orange-500/30 to-amber-500/30 text-orange-300 border-2 border-orange-500/50 shadow-lg shadow-orange-500/20 animate-pulse"
+                  : analytics.shiftDirection === "reverse"
+                  ? "bg-gradient-to-r from-blue-500/30 to-cyan-500/30 text-blue-300 border-2 border-blue-500/50 shadow-lg shadow-blue-500/20 animate-pulse"
+                  : "bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/50"
+              }`}
+            >
+              {analytics.shiftDirection === "forward" ? (
+                <>
+                  <span className="text-lg">→</span>
+                  <span>{t("le_chatelier.status.shifting_products")}</span>
+                </>
+              ) : analytics.shiftDirection === "reverse" ? (
+                <>
+                  <span className="text-lg">←</span>
+                  <span>{t("le_chatelier.status.shifting_reactants")}</span>
+                </>
+              ) : (
+                <>
+                  <span>⚖️</span>
+                  <span>{t("le_chatelier.status.equilibrium")}</span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -309,60 +164,57 @@ const LeChatelierSimulation: React.FC = () => {
       {/* Mobile Panel Toggles */}
       <div className="lg:hidden flex gap-2">
         <button
-          onClick={() => setMobilePanel(mobilePanel === 'controls' ? 'none' : 'controls')}
+          onClick={() =>
+            setMobilePanel(mobilePanel === "controls" ? "none" : "controls")
+          }
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
-            mobilePanel === 'controls'
-              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800'
+            mobilePanel === "controls"
+              ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800"
           }`}
         >
           <Settings className="w-4 h-4" />
-          <span>Controls</span>
+          <span>{t("le_chatelier.controls.title")}</span>
         </button>
         <button
-          onClick={() => setMobilePanel(mobilePanel === 'analytics' ? 'none' : 'analytics')}
+          onClick={() =>
+            setMobilePanel(mobilePanel === "analytics" ? "none" : "analytics")
+          }
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
-            mobilePanel === 'analytics'
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800'
+            mobilePanel === "analytics"
+              ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
+              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800"
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>Analytics</span>
+          <span>{t("le_chatelier.analytics.title")}</span>
         </button>
       </div>
 
       {/* Mobile Panel Content */}
-      {mobilePanel !== 'none' && (
+      {mobilePanel !== "none" && (
         <div className="lg:hidden bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-4">
-          {mobilePanel === 'controls' && (
+          {mobilePanel === "controls" && (
             <LeChatelierControls
               params={params}
-              onParamsChange={setParams}
               isRunning={isRunning}
-              onToggleRun={() => setIsRunning(!isRunning)}
+              onParamsChange={handleParamsChange}
+              onToggleRunning={() => setIsRunning(!isRunning)}
               onReset={handleReset}
-              onAddStress={handleAddStress}
             />
           )}
-          {mobilePanel === 'analytics' && (
-            <LeChatelierAnalytics
-              params={params}
-              equilibriumState={equilibriumState}
-              concentrations={concentrations}
-              stressHistory={stressHistory}
-            />
+          {mobilePanel === "analytics" && (
+            <LeChatelierAnalytics analytics={analytics} />
           )}
         </div>
       )}
 
       {/* Main Content Area */}
-      <div className={`grid gap-4 transition-all duration-500 ${
-        isFullscreen 
-          ? 'grid-cols-1' 
-          : 'lg:grid-cols-[320px_1fr_320px]'
-      }`}>
-        
+      <div
+        className={`grid gap-4 transition-all duration-500 ${
+          isFullscreen ? "grid-cols-1" : "lg:grid-cols-[320px_1fr_320px]"
+        }`}
+      >
         {/* Left Panel - Controls (Desktop) */}
         {!isFullscreen && (
           <div className="hidden lg:block">
@@ -370,17 +222,18 @@ const LeChatelierSimulation: React.FC = () => {
               <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 px-4 py-3 border-b border-gray-700/50">
                 <div className="flex items-center gap-2">
                   <Settings className="w-5 h-5 text-yellow-400" />
-                  <h2 className="font-semibold text-white">System Controls</h2>
+                  <h2 className="font-semibold text-white">
+                    {t("le_chatelier.controls.title")}
+                  </h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
                 <LeChatelierControls
                   params={params}
-                  onParamsChange={setParams}
                   isRunning={isRunning}
-                  onToggleRun={() => setIsRunning(!isRunning)}
+                  onParamsChange={handleParamsChange}
+                  onToggleRunning={() => setIsRunning(!isRunning)}
                   onReset={handleReset}
-                  onAddStress={handleAddStress}
                 />
               </div>
             </div>
@@ -388,29 +241,40 @@ const LeChatelierSimulation: React.FC = () => {
         )}
 
         {/* Center - Simulation Canvas */}
-        <div className={`${isFullscreen ? 'col-span-1' : ''}`}>
+        <div className={`${isFullscreen ? "col-span-1" : ""}`}>
           <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden">
             {/* Canvas Header */}
-            <div className="px-4 py-3 border-b border-gray-700/50 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="px-4 py-3 border-b border-gray-700/50 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Scale className="w-5 h-5 text-blue-400" />
-                  <h2 className="font-semibold text-white">Equilibrium Chamber</h2>
+                  <Scale className="w-5 h-5 text-purple-400" />
+                  <h2 className="font-semibold text-white">
+                    {t("le_chatelier.visualization.title")}
+                  </h2>
                 </div>
                 <div className="flex items-center gap-3">
-                  {/* Q vs K Status (Mini) */}
-                  <div className="hidden sm:flex items-center gap-2 text-xs bg-gray-900/50 px-2 py-1 rounded border border-gray-700/50">
-                    <span className="text-gray-400">Status:</span>
-                    <span className={`${
-                      equilibriumState.position === 'left' ? 'text-blue-400' :
-                      equilibriumState.position === 'right' ? 'text-red-400' :
-                      'text-green-400'
-                    }`}>
-                      {equilibriumState.position === 'equilibrium' ? 'Equilibrium' : 
-                       equilibriumState.position === 'left' ? 'Shifting Left' : 'Shifting Right'}
+                  {/* Equilibrium Status */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="text-gray-400 hidden sm:inline">
+                      {t("le_chatelier.status.label")}
+                    </span>
+                    <span
+                      className={`font-medium ${
+                        analytics.shiftDirection === "forward"
+                          ? "text-orange-400"
+                          : analytics.shiftDirection === "reverse"
+                          ? "text-blue-400"
+                          : "text-green-400"
+                      }`}
+                    >
+                      {analytics.shiftDirection === "forward"
+                        ? t("le_chatelier.status.products_arrow")
+                        : analytics.shiftDirection === "reverse"
+                        ? t("le_chatelier.status.reactants_arrow")
+                        : t("le_chatelier.status.balanced_icon")}
                     </span>
                   </div>
-                  
+
                   {/* Fullscreen Controls */}
                   {isFullscreen && (
                     <div className="flex items-center gap-1 bg-gray-900/80 rounded-lg p-1 border border-gray-700/50">
@@ -418,12 +282,20 @@ const LeChatelierSimulation: React.FC = () => {
                         onClick={() => setIsRunning(!isRunning)}
                         className={`p-2 rounded-md transition-all ${
                           isRunning
-                            ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
-                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                            ? "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30"
+                            : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                         }`}
-                        title={isRunning ? 'Pause' : 'Play'}
+                        title={
+                          isRunning
+                            ? t("le_chatelier.controls.pause")
+                            : t("le_chatelier.controls.start")
+                        }
                       >
-                        {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        {isRunning ? (
+                          <Pause className="w-4 h-4" />
+                        ) : (
+                          <Play className="w-4 h-4" />
+                        )}
                       </button>
                       <button
                         onClick={handleReset}
@@ -434,33 +306,39 @@ const LeChatelierSimulation: React.FC = () => {
                       </button>
                     </div>
                   )}
-                  
+
                   {/* Expand/Minimize Button */}
                   <button
-                    onClick={toggleFullscreen}
+                    onClick={() => setIsFullscreen(!isFullscreen)}
                     className={`p-2 rounded-lg transition-all border ${
                       isFullscreen
-                        ? 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30'
-                        : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-700 hover:text-white'
+                        ? "bg-purple-500/20 text-purple-400 border-purple-500/30 hover:bg-purple-500/30"
+                        : "bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-700 hover:text-white"
                     }`}
-                    title={isFullscreen ? 'Exit Fullscreen' : 'Expand'}
+                    title={isFullscreen ? "Exit Fullscreen" : "Expand"}
                   >
-                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    {isFullscreen ? (
+                      <Minimize2 className="w-4 h-4" />
+                    ) : (
+                      <Maximize2 className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
             </div>
-            
+
             {/* Canvas Content */}
-            <div 
-              ref={canvasContainerRef}
-              className={`${isFullscreen ? 'h-[calc(100vh-140px)]' : 'h-[450px] lg:h-[520px]'} p-2`}
+            <div
+              className={`${
+                isFullscreen
+                  ? "h-[calc(100vh-300px)]"
+                  : "h-[450px] lg:h-[520px]"
+              } p-2`}
             >
               <LeChatelierCanvas
                 params={params}
                 isRunning={isRunning}
-                equilibriumState={equilibriumState}
-                concentrations={concentrations}
+                onAnalyticsUpdate={handleAnalyticsUpdate}
               />
             </div>
           </div>
@@ -473,16 +351,13 @@ const LeChatelierSimulation: React.FC = () => {
               <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-4 py-3 border-b border-gray-700/50">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-cyan-400" />
-                  <h2 className="font-semibold text-white">Real-time Analytics</h2>
+                  <h2 className="font-semibold text-white">
+                    {t("le_chatelier.analytics.title")}
+                  </h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
-                <LeChatelierAnalytics
-                  params={params}
-                  equilibriumState={equilibriumState}
-                  concentrations={concentrations}
-                  stressHistory={stressHistory}
-                />
+                <LeChatelierAnalytics analytics={analytics} />
               </div>
             </div>
           </div>

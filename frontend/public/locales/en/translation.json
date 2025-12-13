@@ -1,0 +1,347 @@
+{
+  "app_title": "STEM SimuLearn",
+  "nav": {
+    "features": "Features",
+    "simulations": "Simulations",
+    "subjects": "Subjects",
+    "resources": "Resources",
+    "signin": "Sign In",
+    "start_learning": "Start Learning",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "biology": "Biology",
+    "math": "Math"
+  },
+  "hero": {
+    "trusted_badge": "Trusted by 10,000+ Students Worldwide",
+    "title_part1": "Explore Science",
+    "title_part2": "Through Experience",
+    "subtitle": "Master Physics, Chemistry, Biology, and Mathematics with hands-on virtual experiments. Learn by doing in our cutting-edge interactive laboratory environment.",
+    "start_exploring": "Start Exploring Now",
+    "watch_demo": "Watch Demo",
+    "stats": {
+      "simulations": "Interactive Simulations",
+      "students": "Active Students",
+      "modules": "Learning Modules",
+      "rating": "Student Rating"
+    },
+    "subjects": {
+      "physics_count": "12 Simulations",
+      "chemistry_count": "15 Experiments",
+      "biology_count": "10 Models",
+      "math_count": "18 Tools"
+    }
+  },
+  "footer": {
+    "description": "The world's leading interactive virtual science lab. Explore physics, chemistry, biology, and mathematics through engaging simulations and experiments.",
+    "quick_links": "Quick Links",
+    "features": "Features",
+    "simulations": "Simulations",
+    "pricing": "Pricing",
+    "about_us": "About Us",
+    "blog": "Blog",
+    "resources": "Resources",
+    "documentation": "Documentation",
+    "api_reference": "API Reference",
+    "tutorials": "Tutorials",
+    "community": "Community",
+    "support": "Support",
+    "rights": "© 2024 STEM SimuLearn. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy"
+  },
+  "visualization": {
+    "title": "Equilibrium Visualization"
+  },
+  "diffusion": {
+    "controls": {
+      "particle_count": "Number of Particles",
+      "mass": "Mass (AMU)",
+      "radius": "Radius (pm)",
+      "temperature": "Initial Temperature (K)",
+      "remove_divider": "Remove Divider",
+      "center_of_mass": "Center of Mass",
+      "flow_rate": "Particle Flow Rate",
+      "scale": "Scale",
+      "stopwatch": "Stopwatch",
+      "speed": {
+        "normal": "Normal",
+        "slow": "Slow"
+      }
+    }
+  },
+  "simulations_page": {
+    "title": "Simulations",
+    "subtitle": "Explore interactive STEM experiments",
+    "browse_by_subject": "Browse by Subject",
+    "back": "Back",
+    "explore": "Explore",
+    "simulation_count_one": "{{count}} Simulation",
+    "simulation_count_other": "{{count}} Simulations"
+  },
+  "simulation_runner": {
+    "back_to_details": "Back to Details",
+    "loading": "Loading simulation...",
+    "close_title": "Close Simulation"
+  },
+  "categories": {
+    "physics": {
+      "name": "Physics",
+      "description": "Explore mechanics, thermodynamics, electromagnetism, and quantum physics"
+    },
+    "chemistry": {
+      "name": "Chemistry",
+      "description": "Experiment with reactions, molecules, and chemical principles"
+    },
+    "biology": {
+      "name": "Biology",
+      "description": "Discover life sciences, cellular processes, and ecosystems"
+    },
+    "math": {
+      "name": "Mathematics",
+      "description": "Visualize functions, geometry, calculus, and statistics"
+    }
+  },
+  "category_page": {
+    "all_subjects": "All Subjects",
+    "active_experiment_one": "Active Experiment",
+    "active_experiment_other": "Active Experiments",
+    "laboratory_experiments": "Laboratory Experiments",
+    "experiments_desc": "Interactive simulations to explore {{category}} principles",
+    "future_experiments": "Future Experiments",
+    "future_desc": "Exciting new simulations in development",
+    "coming_soon": "Coming Soon",
+    "in_development": "In Development",
+    "under_construction": "{{category}} Lab Under Construction",
+    "preparing_msg": "We're preparing exciting {{category}} experiments for you. Check back soon!",
+    "explore_other": "Explore Other Subjects",
+    "start_experiment": "Start Experiment"
+  },
+  "experiment_detail": {
+    "back_to": "Back to {{category}}",
+    "launch_simulation": "Launch Simulation",
+    "overview": "Overview",
+    "how_it_works": "How It Works",
+    "simulation_mechanics": "Simulation Mechanics",
+    "key_concepts": "Key Concepts",
+    "controls_guide": "Controls Guide",
+    "pro_tip": "Pro Tip",
+    "learning_objectives": "Learning Objectives",
+    "prerequisites": "Prerequisites",
+    "how_to_use": "How to Use This Simulation",
+    "quick_info": "Quick Info",
+    "duration": "Duration",
+    "difficulty": "Difficulty",
+    "objectives": "Objectives",
+    "topics_covered": "Topics Covered",
+    "minutes": "minutes",
+    "learning_goals": "learning goals",
+    "duration_value": "{{count}} minutes",
+    "objectives_count": "{{count}} learning goals"
+  },
+  "simulations": {
+    "diffusion-1": {
+      "name": "Gas Diffusion",
+      "description": "Explore how gas particles diffuse across a membrane based on temperature and concentration.",
+      "longDescription": "This simulation demonstrates the process of diffusion - the movement of particles from an area of higher concentration to an area of lower concentration. It's a fundamental concept in chemistry and physics that explains how gases mix, how odors spread, and many biological processes.",
+       "simulationDetails": {
+        "howItWorks": "This simulation models gas diffusion through a semi-permeable membrane. Particles move randomly based on kinetic theory, with their speed determined by temperature and mass. Heavier particles (like Nitrogen) move slower than lighter ones (like Helium) at the same temperature. Over time, you'll observe particles moving from high concentration to low concentration until equilibrium is reached.",
+        "keyConcepts": [
+          "Particles move randomly and collide elastically",
+          "Temperature determines average kinetic energy",
+          "Lighter particles diffuse faster than heavier ones",
+          "Diffusion continues until concentration equalizes"
+        ],
+        "controls": [
+          "Adjust temperature sliders to change particle speed",
+          "Modify particle counts to change concentrations",
+          "Change molecular masses to compare diffusion rates",
+          "Observe how different parameters affect equilibrium time"
+        ],
+        "proTip": "Try starting with extreme values (very high vs very low temperature) to see dramatic differences in diffusion rates."
+      },
+      "objectives": [
+        "Understand particle movement and kinetic theory",
+        "Observe the effect of temperature on diffusion rate",
+        "Analyze how molecular mass affects particle velocity",
+        "Learn about concentration gradients and equilibrium"
+      ]
+    },
+    "reaction-lab-1": {
+      "name": "Advanced Reaction Lab",
+      "description": "Mix chemicals in test tubes and beakers, observe reactions, and learn stoichiometry with two view modes: Visual Lab and Molecular Level.",
+      "longDescription": "This advanced chemistry simulation offers two exciting ways to explore chemical reactions! In Visual Lab mode, watch chemicals pour from test tubes into beakers with realistic animations, bubbles, steam, and color changes. In Molecular Level mode, see particles collide and react at the atomic scale. Learn about composition, decomposition, acid-base, and single replacement reactions while calculating limiting reagents and theoretical yields.",
+      "simulationDetails": {
+        "howItWorks": "Choose between two view modes: Visual Lab shows test tubes, beakers, and realistic lab equipment with pouring animations and color changes. Molecular Level displays particles moving and reacting at the atomic scale. Select a reaction type, choose your chemicals, adjust amounts, and click Start to watch the reaction unfold!",
+        "keyConcepts": [
+          "Visual Lab: See test tubes, beakers, pouring, bubbles, and color changes",
+          "Molecular View: Watch particles collide and form new compounds",
+          "Composition: Two or more elements combine to form a compound",
+          "Decomposition: A compound breaks down into simpler substances",
+          "Acid-Base: An acid and base react to form salt and water",
+          "Single Replacement: One element replaces another in a compound",
+          "Limiting Reagent: The reactant that runs out first"
+        ],
+        "controls": [
+          "Toggle between Visual Lab and Molecular Level views at the top",
+          "Select a reaction type (Composition, Decomposition, Acid-Base, Single Replacement)",
+          "Choose chemicals from the dropdown menus",
+          "Adjust reactant amounts with the slider",
+          "Click Start to begin the reaction",
+          "View analytics panel for stoichiometry data",
+          "Click Reset to start over"
+        ],
+        "proTip": "Try the same reaction in both view modes! Visual Lab is great for understanding what happens in a real lab, while Molecular Level helps you see the particle interactions that cause those changes."
+      },
+      "objectives": [
+        "Understand the four main types of chemical reactions",
+        "Learn to balance chemical equations",
+        "Calculate stoichiometry including limiting reagents",
+        "Compare visual and molecular-level views of reactions",
+        "Apply the concept of molar mass and moles"
+      ]
+    },
+    "le-chatelier-1": {
+      "name": "Le Chatelier's Principle",
+      "description": "Explore how chemical equilibrium responds to changes in temperature, pressure, and concentration through interactive particle simulations.",
+      "longDescription": "This simulation demonstrates Le Chatelier's Principle - when a system at equilibrium is disturbed, it shifts to counteract the change and establish a new equilibrium. Watch particles react in real-time as you adjust temperature, pressure, and concentration. See the equilibrium shift visually and understand the underlying chemistry through animated particle collisions and transformations.",
+      "simulationDetails": {
+        "howItWorks": "This simulation models a reversible chemical reaction at equilibrium. Particles represent reactants (blue) and products (orange). The forward and reverse reactions occur simultaneously at rates that depend on concentration, temperature, and pressure. When you change a condition, watch as the system shifts to counteract your change - this is Le Chatelier's Principle in action!",
+        "keyConcepts": [
+          "Equilibrium is dynamic - reactions continue in both directions",
+          "Increasing temperature favors the endothermic direction",
+          "Increasing pressure favors the side with fewer gas molecules",
+          "Adding a substance shifts equilibrium away from that substance",
+          "The equilibrium constant K changes only with temperature"
+        ],
+        "controls": [
+          "Choose reaction type (exothermic or endothermic forward reaction)",
+          "Adjust temperature using the slider",
+          "Change pressure/volume with the pressure control",
+          "Add or remove reactants and products",
+          "Observe the Q vs K relationship and shift direction",
+          "Click Start to begin the simulation"
+        ],
+        "proTip": "Try making a sudden large change (like doubling the temperature) to see a dramatic equilibrium shift, then watch as the system gradually reaches its new equilibrium position!"
+      },
+      "objectives": [
+        "Understand Le Chatelier's Principle and equilibrium dynamics",
+        "Observe how temperature affects equilibrium position",
+        "Analyze the effect of pressure changes on gaseous equilibria",
+        "Explore concentration changes and equilibrium shifts",
+        "Differentiate between endothermic and exothermic reactions"
+      ]
+    },
+    "convex-lens": {
+      "name": "Convex Lens",
+      "description": "Explore image formation by convex lenses and understand the lens formula.",
+      "longDescription": "This simulation demonstrates how convex (converging) lenses form images. By adjusting the object distance and focal length, you can observe how real and virtual images are formed, and understand concepts like magnification, focal points, and ray diagrams.",
+      "simulationDetails": {
+        "howItWorks": "The simulation shows a convex lens with adjustable focal length. Place an object at different distances and observe how the lens forms images. Three principal rays are drawn: (1) parallel to axis -> through focal point, (2) through optical center -> straight, (3) through focal point -> parallel to axis. The intersection determines the image position.",
+        "keyConcepts": [
+          "Convex lenses converge parallel light rays to a focal point",
+          "Lens formula: 1/f = 1/v + 1/u relates focal length, image distance, and object distance",
+          "Magnification m = v/u = h_i/h_o (negative for inverted images)",
+          "Real images form when object is beyond focal length (inverted)",
+          "Virtual images form when object is within focal length (upright, magnified)"
+        ],
+        "controls": [
+          "Adjust object distance slider to move the object",
+          "Change focal length to see different lens strengths",
+          "Modify object height to observe size effects",
+          "Toggle rays, focal points, and grid for better visualization",
+          "Watch how image distance and magnification change in real-time"
+        ],
+        "proTip": "Try placing the object exactly at 2f (twice the focal length) - you'll get a real, inverted image of the same size at 2f on the other side!"
+      },
+      "objectives": [
+        "Understand image formation by convex lenses",
+        "Apply the lens formula: 1/f = 1/v + 1/u",
+        "Calculate magnification and image properties",
+        "Analyze ray diagrams for different object positions",
+        "Distinguish between real and virtual images"
+      ]
+    },
+    "concave-mirror": {
+      "name": "Concave Mirror",
+      "description": "Study image formation by concave mirrors and learn the mirror formula.",
+      "longDescription": "This simulation demonstrates how concave (converging) mirrors form images through reflection. Adjust the object position relative to the focal point to see how real and virtual images are created, and understand concepts like magnification, center of curvature, and ray diagrams for spherical mirrors.",
+      "simulationDetails": {
+        "howItWorks": "The simulation displays a concave mirror with adjustable focal length. Position an object at various distances from the mirror and observe image formation. Three principal rays are traced: (1) parallel to axis -> reflects through focal point, (2) through focal point -> reflects parallel to axis, (3) through center of curvature -> reflects back along same path.",
+        "keyConcepts": [
+          "Concave mirrors converge parallel light rays to a focal point",
+          "Mirror formula: 1/f = 1/v + 1/u (same as lens formula)",
+          "Focal length f = R/2 where R is radius of curvature",
+          "Magnification m = -v/u = h_i/h_o (negative for inverted)",
+          "Real images when object beyond F (inverted), virtual when within F (upright, magnified)"
+        ],
+        "controls": [
+          "Move object distance slider to change object position",
+          "Adjust focal length to modify mirror curvature",
+          "Change object height to see size relationships",
+          "Toggle rays, focal points, and grid visualization",
+          "Observe real-time updates of image properties"
+        ],
+        "proTip": "Place the object at the center of curvature (2f) - you'll see a real, inverted image of equal size form at the same position!"
+      },
+      "objectives": [
+         "Understand image formation by concave mirrors",
+        "Apply the mirror formula: 1/f = 1/v + 1/u",
+        "Calculate magnification and image characteristics",
+        "Analyze ray diagrams for different object positions",
+        "Understand the relationship between focal length and radius of curvature"
+      ]
+    },
+    "projectile-motion-1": {
+      "name": "Projectile Motion",
+      "description": "Analyze the trajectory of objects under gravity with varying initial conditions.",
+      "longDescription": "Study the parabolic motion of projectiles, understanding how angle, velocity, and air resistance affect range and height.",
+      "simulationDetails": {
+         "howItWorks": "Coming soon",
+        "keyConcepts": ["Coming soon"],
+        "controls": ["Coming soon"],
+        "proTip": "Coming soon"
+      },
+      "objectives": [
+        "Understand 2D kinematics",
+        "Analyze velocity components",
+        "Calculate range and maximum height",
+        "Explore the effect of air resistance"
+      ]
+    },
+    "cell-division-1": {
+      "name": "Cell Division (Mitosis)",
+      "description": "Watch the process of cell division and understand the stages of mitosis.",
+      "longDescription": "Explore the fascinating process of mitosis, where one cell divides into two identical daughter cells.",
+      "simulationDetails": {
+         "howItWorks": "Coming soon",
+        "keyConcepts": ["Coming soon"],
+        "controls": ["Coming soon"],
+        "proTip": "Coming soon"
+      },
+      "objectives": [
+        "Identify the phases of mitosis",
+        "Understand chromosome behavior",
+        "Learn about cell cycle regulation"
+      ]
+    },
+    "graph-plotter-1": {
+      "name": "Function Grapher",
+      "description": "Visualize mathematical functions in 2D with interactive controls.",
+      "longDescription": "Plot and analyze various mathematical functions, explore transformations, and understand function behavior.",
+      "simulationDetails": {
+         "howItWorks": "Coming soon",
+        "keyConcepts": ["Coming soon"],
+        "controls": ["Coming soon"],
+        "proTip": "Coming soon"
+      },
+      "objectives": [
+        "Plot different function types",
+        "Understand function transformations",
+        "Analyze function properties",
+        "Explore calculus concepts visually"
+      ]
+    }
+  }
+}
