@@ -9,6 +9,8 @@ const simulationComponents: Record<string, React.LazyExoticComponent<React.Compo
   'diffusion': React.lazy(() => import('../simulations/chemistry/Diffusion/DiffusionSimulation')),
   'reaction-lab': React.lazy(() => import('../simulations/chemistry/ReactionLab/ReactionLabSimulation')),
   'le-chatelier': React.lazy(() => import('../simulations/chemistry/LeChatelier/LeChatelierSimulation')),
+  'convex-lens': React.lazy(() => import('../simulations/physics/ConvexLens/ConvexLensSimulation')),
+  'concave-mirror': React.lazy(() => import('../simulations/physics/ConcaveMirror/ConcaveMirrorSimulation')),
   // Add more simulations here as you create them
   // 'projectile-motion': React.lazy(() => import('../simulations/physics/ProjectileMotion/ProjectileMotionSimulation')),
 };
