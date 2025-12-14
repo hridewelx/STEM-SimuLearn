@@ -52,9 +52,13 @@ export interface ReactionRule {
   };
   energyChange: "exothermic" | "endothermic" | "neutral";
   warning?: string;
+  warning_bn?: string;
   explanation?: string;
+  explanation_bn?: string;
   conditions?: string;
+  conditions_bn?: string;
   howToPerform?: string;
+  howToPerform_bn?: string;
 }
 
 // Simulation parameters
@@ -89,10 +93,15 @@ export interface ReactionResult {
   };
   energyChange: "exothermic" | "endothermic" | "neutral";
   warning?: string;
+  warning_bn?: string;
   errorMessage?: string;
+  errorMessage_bn?: string;
   explanation?: string;
+  explanation_bn?: string;
   conditions?: string;
+  conditions_bn?: string;
   howToPerform?: string;
+  howToPerform_bn?: string;
   stoichiometricRatio: string;
 }
 

@@ -8,77 +8,60 @@ import {
   BookOpen,
   ArrowRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Features = () => {
+  const { t, ready } = useTranslation();
+
+  if (!ready) {
+    return <div className="py-20 text-center">Loading...</div>;
+  }
+
   const features = [
     {
-      title: "Physics Simulations",
-      description:
-        "Explore mechanics, thermodynamics, electromagnetism, and quantum physics through interactive experiments.",
+      title: t("features.cards.physics.title"),
+      description: t("features.cards.physics.description"),
       icon: <Atom className="w-8 h-8" />,
       color: "primary",
-      experiments: [
-        // "Projectile Motion",
-        // "Pendulum Oscillation",
-        // "Wave Interference",
-        // "Circuit Builder",
-      ],
+      action: t("features.cards.physics.action"),
     },
     {
-      title: "Chemistry Lab",
-      description:
-        "Perform virtual chemical reactions, explore molecular structures, and understand chemical principles safely.",
+      title: t("features.cards.chemistry.title"),
+      description: t("features.cards.chemistry.description"),
       icon: <Beaker className="w-8 h-8" />,
       color: "secondary",
-      experiments: [
-        // "Acid-Base Titration",
-        // "Molecular Modeling",
-        // "Reaction Kinetics",
-        // "Periodic Table",
-      ],
+      action: t("features.cards.chemistry.action"),
     },
     {
-      title: "Biology Exploration",
-      description:
-        "Dive into cellular processes, genetics, ecosystems, and human anatomy with detailed visualizations.",
+      title: t("features.cards.biology.title"),
+      description: t("features.cards.biology.description"),
       icon: <Dna className="w-8 h-8" />,
       color: "accent",
-      experiments: [
-        // "Cell Division",
-        // "DNA Replication",
-        // "Photosynthesis",
-        // "Human Body Systems",
-      ],
+      action: t("features.cards.biology.action"),
     },
     {
-      title: "Mathematics Toolkit",
-      description:
-        "Visualize functions, solve equations, explore geometry, and understand statistical concepts interactively.",
+      title: t("features.cards.math.title"),
+      description: t("features.cards.math.description"),
       icon: <Calculator className="w-8 h-8" />,
       color: "info",
-      experiments: [
-        // "Graph Plotter",
-        // "Calculus Visualizer",
-        // "3D Geometry",
-        // "Statistics Lab",
-      ],
+      action: t("features.cards.math.action"),
     },
   ];
 
   const additionalFeatures = [
     {
-      title: "Real-time Collaboration",
-      description: "Work together with classmates on experiments in real-time",
+      title: t("features.extra.collaboration.title"),
+      description: t("features.extra.collaboration.description"),
       icon: <Users className="w-6 h-6" />,
     },
     {
-      title: "Progress Tracking",
-      description: "Monitor your learning journey with detailed analytics",
+      title: t("features.extra.progress.title"),
+      description: t("features.extra.progress.description"),
       icon: <BarChart className="w-6 h-6" />,
     },
     {
-      title: "Curriculum Aligned",
-      description: "Content aligned with international science standards",
+      title: t("features.extra.curriculum.title"),
+      description: t("features.extra.curriculum.description"),
       icon: <BookOpen className="w-6 h-6" />,
     },
   ];
@@ -88,12 +71,11 @@ const Features = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Four Disciplines,{" "}
-            <span className="text-primary">Endless Possibilities</span>
+            {t("features.title_part1")}{" "}
+            <span className="text-primary">{t("features.title_part2")}</span>
           </h2>
           <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
-            Access a comprehensive suite of interactive simulations designed to
-            make complex concepts easy to understand
+            {t("features.description")}
           </p>
         </div>
 
@@ -116,19 +98,8 @@ const Features = () => {
                       {feature.description}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {feature.experiments.map((exp, i) => (
-                        <div
-                          key={i}
-                          className="badge badge-outline badge-primary"
-                        >
-                          {exp}
-                        </div>
-                      ))}
-                    </div>
-
                     <button className="btn btn-primary btn-sm">
-                      Explore {feature.title.split(" ")[0]}
+                      {feature.action}
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>

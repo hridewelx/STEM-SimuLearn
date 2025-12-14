@@ -1,33 +1,46 @@
-import React from 'react';
-import { ConcaveMirrorParams } from './types';
-import { Activity, Ruler, Maximize2, ImageIcon, FlipVertical } from 'lucide-react';
+import React from "react";
+import { ConcaveMirrorParams } from "./types";
+import {
+  Activity,
+  Ruler,
+  Maximize2,
+  ImageIcon,
+  FlipVertical,
+} from "lucide-react";
 
 interface ConcaveMirrorAnalyticsProps {
   params: ConcaveMirrorParams;
 }
 
-const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params }) => {
+import { useTranslation } from "react-i18next";
+
+const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({
+  params,
+}) => {
+  const { t } = useTranslation();
   // Mirror formula: 1/f = 1/v + 1/u
   // Using sign convention: u is negative, f is negative for concave mirror
   const u = -params.objectDistance;
   const f = -params.focalLength;
   const v = (f * u) / (u - f);
-  
+
   const magnification = -v / u;
   const imageHeight = magnification * params.objectHeight;
-  
+
   // Determine image type
   const isReal = v < 0;
   const isAtInfinity = Math.abs(v) > 500 || !isFinite(v);
-  
+
   // Determine orientation
   const isInverted = magnification < 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-5 h-5 text-emerald-600" />
-        <h3 className="text-xl font-bold text-white">Image Analytics</h3>
+        <Activity className="w-5 h-5 text-green-400" />
+        <h3 className="text-xl font-bold text-white">
+          {t("concaveMirror.analytics.title")}
+        </h3>
       </div>
 
       {/* Image Properties */}
@@ -35,42 +48,68 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         {/* Image Distance */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <Ruler className="w-4 h-4 text-blue-600" />
-            <span className="text-xs text-gray-400">Image Distance (v)</span>
+            <Ruler className="w-4 h-4 text-blue-400" />
+            <span className="text-xs text-gray-400">
+              {t("concaveMirror.analytics.imageDistance")}
+            </span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {isAtInfinity ? '∞' : `${Math.abs(v).toFixed(1)} cm`}
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.infinity")
+              : `${Math.abs(v).toFixed(1)} cm`}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {isAtInfinity ? 'At infinity' : isReal ? 'In front of mirror' : 'Behind mirror'}
+          <p className="text-xs text-gray-500 mt-1">
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.atInfinity")
+              : isReal
+              ? t("concaveMirror.analytics.values.inFront")
+              : t("concaveMirror.analytics.values.behind")}
           </p>
         </div>
 
         {/* Magnification */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <Maximize2 className="w-4 h-4 text-purple-600" />
-            <span className="text-xs text-gray-400">Magnification (m)</span>
+            <Maximize2 className="w-4 h-4 text-purple-400" />
+            <span className="text-xs text-gray-400">
+              {t("concaveMirror.analytics.magnification")}
+            </span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {isAtInfinity ? '∞' : `${magnification.toFixed(2)}×`}
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.infinity")
+              : `${magnification.toFixed(2)}×`}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {Math.abs(magnification) > 1 ? 'Enlarged' : Math.abs(magnification) === 1 ? 'Same size' : 'Diminished'}
+          <p className="text-xs text-gray-500 mt-1">
+            {Math.abs(magnification) > 1
+              ? t("concaveMirror.analytics.values.enlarged")
+              : Math.abs(magnification) === 1
+              ? t("concaveMirror.analytics.values.sameSize")
+              : t("concaveMirror.analytics.values.diminished")}
           </p>
         </div>
 
         {/* Image Type */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <ImageIcon className="w-4 h-4 text-emerald-600" />
-            <span className="text-xs text-gray-400">Image Type</span>
+            <ImageIcon className="w-4 h-4 text-green-400" />
+            <span className="text-xs text-gray-400">
+              {t("concaveMirror.analytics.imageType")}
+            </span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {isAtInfinity ? 'No Image' : isReal ? 'Real' : 'Virtual'}
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.noImage")
+              : isReal
+              ? t("concaveMirror.analytics.values.real")
+              : t("concaveMirror.analytics.values.virtual")}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {isAtInfinity ? 'Formed at infinity' : isReal ? 'Can be projected' : 'Cannot be projected'}
+          <p className="text-xs text-gray-500 mt-1">
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.formedAtInfinity")
+              : isReal
+              ? t("concaveMirror.analytics.values.canBeProjected")
+              : t("concaveMirror.analytics.values.cannotBeProjected")}
           </p>
         </div>
 
@@ -78,13 +117,23 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
             <FlipVertical className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-gray-400">Orientation</span>
+            <span className="text-xs text-gray-400">
+              {t("concaveMirror.analytics.orientation")}
+            </span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {isAtInfinity ? '-' : isInverted ? 'Inverted' : 'Erect'}
+            {isAtInfinity
+              ? "-"
+              : isInverted
+              ? t("concaveMirror.analytics.values.inverted")
+              : t("concaveMirror.analytics.values.erect")}
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {isAtInfinity ? 'Not applicable' : isInverted ? 'Upside down' : 'Upright'}
+          <p className="text-xs text-gray-500 mt-1">
+            {isAtInfinity
+              ? t("concaveMirror.analytics.values.notApplicable")
+              : isInverted
+              ? t("concaveMirror.analytics.values.upsideDown")
+              : t("concaveMirror.analytics.values.upright")}
           </p>
         </div>
       </div>
@@ -94,28 +143,39 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
 
       {/* Formulas */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-gray-400">Mirror Formula</h4>
-        
+        <h4 className="text-sm font-semibold text-gray-400">
+          {t("concaveMirror.analytics.mirrorFormula")}
+        </h4>
+
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="text-center space-y-2">
-            <p className="text-lg font-mono text-blue-600">1/f = 1/v + 1/u</p>
+            <p className="text-lg font-mono text-blue-400">1/f = 1/v + 1/u</p>
             <p className="text-sm text-gray-400">
               f = {f.toFixed(1)} cm, u = {u.toFixed(1)} cm
             </p>
-            <p className="text-sm text-emerald-600">
-              v = {isAtInfinity ? '∞' : `${v.toFixed(1)} cm`}
+            <p className="text-sm text-green-400">
+              v ={" "}
+              {isAtInfinity
+                ? t("concaveMirror.analytics.values.infinity")
+                : `${v.toFixed(1)} cm`}
             </p>
           </div>
         </div>
 
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="text-center space-y-2">
-            <p className="text-lg font-mono text-purple-600">m = -v/u = h'/h</p>
+            <p className="text-lg font-mono text-purple-400">m = -v/u = h'/h</p>
             <p className="text-sm text-gray-400">
-              Image height (h') = {isAtInfinity ? '∞' : `${imageHeight.toFixed(1)} cm`}
+              h&apos; ={" "}
+              {isAtInfinity
+                ? t("concaveMirror.analytics.values.infinity")
+                : `${imageHeight.toFixed(1)} cm`}
             </p>
-            <p className="text-sm text-emerald-600">
-              m = {isAtInfinity ? '∞' : magnification.toFixed(2)}
+            <p className="text-sm text-green-400">
+              m ={" "}
+              {isAtInfinity
+                ? t("concaveMirror.analytics.values.infinity")
+                : magnification.toFixed(2)}
             </p>
           </div>
         </div>
@@ -126,61 +186,95 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
 
       {/* Position Summary */}
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-gray-400">Position Summary</h4>
-        
+        <h4 className="text-sm font-semibold text-gray-400">
+          {t("concaveMirror.analytics.positionSummary")}
+        </h4>
+
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 space-y-2">
           <p className="text-sm text-white font-medium">
-            Object Position: {' '}
+            {t("concaveMirror.analytics.descriptions.objectPosition")}{" "}
             {params.objectDistance > 2 * params.focalLength
-              ? 'Beyond C (u > 2f)'
+              ? t("concaveMirror.controls.quickPositions.beyondC")
               : params.objectDistance === 2 * params.focalLength
-              ? 'At C (u = 2f)'
+              ? t("concaveMirror.controls.quickPositions.atC")
               : params.objectDistance > params.focalLength
-              ? 'Between C and F'
+              ? t("concaveMirror.controls.quickPositions.betweenCandF")
               : params.objectDistance === params.focalLength
-              ? 'At F (u = f)'
-              : 'Between F and Mirror'}
+              ? t("concaveMirror.controls.quickPositions.atF")
+              : t("concaveMirror.controls.quickPositions.betweenFandMirror")}
           </p>
-          
+
           <div className="text-xs text-gray-400 space-y-1">
             {params.objectDistance > 2 * params.focalLength && (
               <>
-                <p>• Image forms between F and C</p>
-                <p>• Real, inverted, and diminished</p>
-                <p>• Example: Photography, telescopes</p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.imageFormsBetween")}
+                </p>
+                <p>
+                  {t(
+                    "concaveMirror.analytics.descriptions.realInvertedDiminished"
+                  )}
+                </p>
+                <p>{t("concaveMirror.analytics.descriptions.examplePhoto")}</p>
               </>
             )}
-            
+
             {params.objectDistance === 2 * params.focalLength && (
               <>
-                <p>• Image forms at C</p>
-                <p>• Real, inverted, same size</p>
-                <p>• Object and image at same distance</p>
+                <p>{t("concaveMirror.analytics.descriptions.imageFormsAtC")}</p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.realInvertedSame")}
+                </p>
+                <p>
+                  {t(
+                    "concaveMirror.analytics.descriptions.objectImageSameDist"
+                  )}
+                </p>
               </>
             )}
-            
+
             {params.objectDistance > params.focalLength &&
               params.objectDistance < 2 * params.focalLength && (
                 <>
-                  <p>• Image forms beyond C</p>
-                  <p>• Real, inverted, and enlarged</p>
-                  <p>• Used in solar furnaces</p>
+                  <p>
+                    {t(
+                      "concaveMirror.analytics.descriptions.imageFormsBeyondC"
+                    )}
+                  </p>
+                  <p>
+                    {t(
+                      "concaveMirror.analytics.descriptions.realInvertedEnlarged"
+                    )}
+                  </p>
+                  <p>{t("concaveMirror.analytics.descriptions.usedSolar")}</p>
                 </>
               )}
-            
+
             {params.objectDistance === params.focalLength && (
               <>
-                <p>• Image at infinity</p>
-                <p>• Real, highly enlarged</p>
-                <p>• Used in searchlights, headlights</p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.imageAtInfinity")}
+                </p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.realHighlyEnlarged")}
+                </p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.usedSearchlights")}
+                </p>
               </>
             )}
-            
+
             {params.objectDistance < params.focalLength && (
               <>
-                <p>• Image behind mirror</p>
-                <p>• Virtual, erect, and enlarged</p>
-                <p>• Used in shaving mirrors, dental mirrors</p>
+                <p>
+                  {t("concaveMirror.analytics.descriptions.imageBehindMirror")}
+                </p>
+                <p>
+                  {t(
+                    "concaveMirror.analytics.descriptions.virtualErectEnlarged"
+                  )}
+                </p>
+                <p>{t("concaveMirror.analytics.descriptions.usedShaving")}</p>
               </>
             )}
           </div>
@@ -189,13 +283,15 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
 
       {/* Sign Convention Reminder */}
       <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-4">
-        <p className="text-xs text-blue-300 font-medium mb-2">📌 Sign Convention</p>
+        <p className="text-xs text-blue-300 font-medium mb-2">
+          📌 {t("concaveMirror.analytics.signConvention")}
+        </p>
         <ul className="text-xs text-gray-400 space-y-1">
-          <li>• Distances measured from mirror pole</li>
-          <li>• Object distance (u) is negative</li>
-          <li>• Focal length (f) is negative for concave</li>
-          <li>• Real images: v is negative (in front)</li>
-          <li>• Virtual images: v is positive (behind)</li>
+          <li>{t("concaveMirror.analytics.signRules.pole")}</li>
+          <li>{t("concaveMirror.analytics.signRules.uNegative")}</li>
+          <li>{t("concaveMirror.analytics.signRules.fNegative")}</li>
+          <li>{t("concaveMirror.analytics.signRules.vReal")}</li>
+          <li>{t("concaveMirror.analytics.signRules.vVirtual")}</li>
         </ul>
       </div>
     </div>

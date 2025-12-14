@@ -103,10 +103,10 @@ const LeChatelierSimulation = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                Le Chatelier's Principle
+                {t("leChatelier.title")}
               </h2>
               <p className="text-xs text-gray-300 font-medium">
-                Equilibrium & Stress Response
+                {t("leChatelier.subtitle")}
               </p>
             </div>
           </div>
@@ -125,7 +125,9 @@ const LeChatelierSimulation = () => {
                   isRunning ? "bg-green-400 animate-pulse" : "bg-gray-500"
                 }`}
               />
-              {isRunning ? "Running" : "Ready"}
+              {isRunning
+                ? t("leChatelier.status.running")
+                : t("leChatelier.status.ready")}
             </div>
 
             {/* LARGE PROMINENT STATUS */}
@@ -141,17 +143,17 @@ const LeChatelierSimulation = () => {
               {analytics.shiftDirection === "forward" ? (
                 <>
                   <span className="text-lg">→</span>
-                  <span>Shifting Right (Products)</span>
+                  <span>{t("leChatelier.analytics.shiftingProducts")}</span>
                 </>
               ) : analytics.shiftDirection === "reverse" ? (
                 <>
                   <span className="text-lg">←</span>
-                  <span>Shifting Left (Reactants)</span>
+                  <span>{t("leChatelier.analytics.shiftingReactants")}</span>
                 </>
               ) : (
                 <>
                   <span className="text-lg">⇌</span>
-                  <span>At Equilibrium</span>
+                  <span>{t("leChatelier.analytics.atEquilibrium")}</span>
                 </>
               )}
             </div>
@@ -172,7 +174,7 @@ const LeChatelierSimulation = () => {
           }`}
         >
           <Settings className="w-4 h-4" />
-          <span>System Controls</span>
+          <span>{t("leChatelier.panels.controls")}</span>
         </button>
         <button
           onClick={() =>
@@ -185,7 +187,7 @@ const LeChatelierSimulation = () => {
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>Real-time Analytics</span>
+          <span>{t("leChatelier.panels.analytics")}</span>
         </button>
       </div>
 
@@ -220,7 +222,9 @@ const LeChatelierSimulation = () => {
               <div className="bg-gradient-to-r from-yellow-500/15 to-orange-500/15 px-4 py-3 border-b border-gray-700/60">
                 <div className="flex items-center gap-2">
                   <Settings className="w-5 h-5 text-yellow-300" />
-                  <h2 className="font-bold text-white">System Controls</h2>
+                  <h2 className="font-bold text-white">
+                    {t("leChatelier.panels.controls")}
+                  </h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
@@ -245,14 +249,14 @@ const LeChatelierSimulation = () => {
                 <div className="flex items-center gap-2">
                   <Scale className="w-5 h-5 text-purple-300" />
                   <h2 className="font-bold text-white tracking-wide">
-                    Equilibrium Chamber
+                    {t("leChatelier.canvas.title")}
                   </h2>
                 </div>
                 <div className="flex items-center gap-3">
                   {/* Equilibrium Status */}
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-gray-400 hidden sm:inline">
-                      Status:
+                      {t("leChatelier.canvas.statusLabel")}
                     </span>
                     <span
                       className={`font-medium px-2 py-1 rounded-md ${
@@ -264,10 +268,10 @@ const LeChatelierSimulation = () => {
                       }`}
                     >
                       {analytics.shiftDirection === "forward"
-                        ? "→ Right"
+                        ? `→ ${t("leChatelier.status.right")}`
                         : analytics.shiftDirection === "reverse"
-                        ? "← Left"
-                        : "⇌ Balanced"}
+                        ? `← ${t("leChatelier.status.left")}`
+                        : `⇌ ${t("leChatelier.status.balanced")}`}
                     </span>
                   </div>
 
@@ -348,7 +352,9 @@ const LeChatelierSimulation = () => {
               <div className="bg-gradient-to-r from-cyan-500/15 to-blue-500/15 px-4 py-3 border-b border-gray-700/60">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-cyan-300" />
-                  <h2 className="font-bold text-white">Real-time Analytics</h2>
+                  <h2 className="font-bold text-white">
+                    {t("leChatelier.panels.analytics")}
+                  </h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">

@@ -1,13 +1,17 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import ConcaveMirrorCanvas from './ConcaveMirrorCanvas';
-import ConcaveMirrorControls from './ConcaveMirrorControls';
-import ConcaveMirrorAnalytics from './ConcaveMirrorAnalytics';
-import { ConcaveMirrorParams } from './types';
-import { defaultConcaveMirrorParams } from './config';
+import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import ConcaveMirrorCanvas from "./ConcaveMirrorCanvas";
+import ConcaveMirrorControls from "./ConcaveMirrorControls";
+import ConcaveMirrorAnalytics from "./ConcaveMirrorAnalytics";
+import { ConcaveMirrorParams } from "./types";
+import { defaultConcaveMirrorParams } from "./config";
+import { useTranslation } from "react-i18next";
 
 const ConcaveMirrorSimulation = () => {
-  const [params, setParams] = useState<ConcaveMirrorParams>(defaultConcaveMirrorParams);
+  const { t } = useTranslation();
+  const [params, setParams] = useState<ConcaveMirrorParams>(
+    defaultConcaveMirrorParams
+  );
   const [showControls, setShowControls] = useState(true);
   const [showAnalytics, setShowAnalytics] = useState(true);
 
@@ -29,12 +33,19 @@ const ConcaveMirrorSimulation = () => {
             onClick={() => setShowControls(!showControls)}
             className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-between transition-colors"
           >
-            <span>Controls</span>
-            {showControls ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <span>{t("concaveMirror.panels.controls")}</span>
+            {showControls ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
           {showControls && (
             <div className="max-h-[70vh] overflow-y-auto p-4 w-80">
-              <ConcaveMirrorControls params={params} onParamsChange={handleParamsChange} />
+              <ConcaveMirrorControls
+                params={params}
+                onParamsChange={handleParamsChange}
+              />
             </div>
           )}
         </div>
@@ -47,8 +58,12 @@ const ConcaveMirrorSimulation = () => {
             onClick={() => setShowAnalytics(!showAnalytics)}
             className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold flex items-center justify-between transition-colors"
           >
-            <span>Analytics</span>
-            {showAnalytics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            <span>{t("concaveMirror.panels.analytics")}</span>
+            {showAnalytics ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
           {showAnalytics && (
             <div className="max-h-[70vh] overflow-y-auto p-4 w-80">

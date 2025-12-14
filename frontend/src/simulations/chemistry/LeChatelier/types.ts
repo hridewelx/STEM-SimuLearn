@@ -35,6 +35,8 @@ export interface ChemicalReaction {
   }[];
   enthalpy: number; // kJ/mol (negative = exothermic, positive = endothermic)
   description: string;
+  name_bn?: string;
+  description_bn?: string;
   colorScheme: {
     reactant: string;
     product: string;
@@ -54,6 +56,9 @@ export const PREDEFINED_REACTIONS: ChemicalReaction[] = [
     enthalpy: -92, // Exothermic
     description:
       "Synthesis of ammonia from nitrogen and hydrogen. Exothermic reaction.",
+    name_bn: "হেবার বস পদ্ধতি",
+    description_bn:
+      "নাইট্রোজেন এবং হাইড্রোজেন থেকে অ্যামোনিয়া সংশ্লেষণ। তাপ উৎপাদী বিক্রিয়া।",
     colorScheme: { reactant: "#3B82F6", product: "#F97316" },
   },
   {
@@ -65,6 +70,9 @@ export const PREDEFINED_REACTIONS: ChemicalReaction[] = [
     enthalpy: -57, // Exothermic
     description:
       "Brown NO₂ gas forming colorless N₂O₄ gas. Pressure strongly affects this equilibrium.",
+    name_bn: "নাইট্রোজেন ডাইঅক্সাইড ডাইমারাইজেশন",
+    description_bn:
+      "বাদামী NO₂ গ্যাস বর্ণহীন N₂O₄ গ্যাসে পরিণত হচ্ছে। এই সাম্যাবস্থায় চাপ প্রবলভাবে প্রভাব ফেলে।",
     colorScheme: { reactant: "#9A3412", product: "#E2E8F0" }, // Brown to Colorless/White
   },
   {
@@ -78,6 +86,8 @@ export const PREDEFINED_REACTIONS: ChemicalReaction[] = [
     products: [{ name: "HI", coefficient: 2, state: "g" }],
     enthalpy: 53, // Endothermic (actually depends on I2 state but often taught as endo for HI formation from gas)
     description: "Formation of Hydrogen Iodide. Reaction is Endothermic.",
+    name_bn: "হাইড্রোজেন আয়োডাইড সংশ্লেষণ",
+    description_bn: "হাইড্রোজেন আয়োডাইড গঠন। বিক্রিয়াটি তাপহারী।",
     colorScheme: { reactant: "#8B5CF6", product: "#10B981" }, // Purple to Green
   },
   {
@@ -95,6 +105,9 @@ export const PREDEFINED_REACTIONS: ChemicalReaction[] = [
     enthalpy: 50, // Endothermic
     description:
       "Pink Cobalt(II) turning to Blue Cobalt(II) Chloride. Changing temperature shifts color.",
+    name_bn: "কোবাল্ট ক্লোরাইড জটিল যৌগ",
+    description_bn:
+      "গোলাপী কোবাল্ট(II) নীল কোবাল্ট(II) ক্লোরাইডে পরিণত হচ্ছে। তাপমাত্রা পরিবর্তন রং পরিবর্তন করে।",
     colorScheme: { reactant: "#EC4899", product: "#3B82F6" }, // Pink to Blue
   },
 ];

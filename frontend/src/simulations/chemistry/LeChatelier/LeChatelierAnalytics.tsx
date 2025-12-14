@@ -32,11 +32,11 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
   const getShiftText = () => {
     switch (analytics.shiftDirection) {
       case "forward":
-        return t("Shifting Products");
+        return t("leChatelier.analytics.shiftingProducts");
       case "reverse":
-        return t("Shifting Reactants");
+        return t("leChatelier.analytics.shiftingReactants");
       default:
-        return t("At Equilibrium");
+        return t("leChatelier.analytics.atEquilibrium");
     }
   };
 
@@ -66,8 +66,8 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
               </p>
               <p className="text-xs text-gray-400">
                 {analytics.isAtEquilibrium
-                  ? t("System at Equilibrium")
-                  : t("System Adjusting")}
+                  ? t("leChatelier.analytics.systemAtEquilibrium")
+                  : t("leChatelier.analytics.systemAdjusting")}
               </p>
             </div>
           </div>
@@ -85,12 +85,12 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
       <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
         <h3 className="flex items-center gap-2 text-sm font-medium text-gray-400 mb-3">
           <Scale className="w-4 h-4 text-purple-600" />
-          {t("Equilibrium Analysis")}
+          {t("leChatelier.analytics.equilibriumAnalysis")}
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
             <p className="text-xs text-cyan-600 mb-1">
-              {t("Reaction Quotient")}
+              {t("leChatelier.analytics.reactionQuotient")}
             </p>
             <p className="text-xl font-bold text-white">
               Q ={" "}
@@ -101,7 +101,7 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
           </div>
           <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
             <p className="text-xs text-purple-600 mb-1">
-              {t("Equilibrium Quotient")}
+              {t("leChatelier.analytics.equilibriumQuotient")}
             </p>
             <p className="text-xl font-bold text-white">
               K = {analytics.equilibriumConstant.toFixed(2)}
@@ -123,14 +123,14 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
       <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
         <h3 className="flex items-center gap-2 text-sm font-medium text-gray-400 mb-3">
           <Beaker className="w-4 h-4 text-emerald-600" />
-          {t("Particle Distribution")}
+          {t("leChatelier.analytics.particleDistribution")}
         </h3>
 
         {/* Reactants Bar */}
         <div className="space-y-2 mb-3">
           <div className="flex justify-between text-sm">
             <span className="text-blue-600">
-              {t("Reactants")}
+              {t("leChatelier.controls.reactants")}
             </span>
             <span className="text-white font-medium">
               {analytics.reactantCount} ({analytics.percentReactants.toFixed(1)}
@@ -149,7 +149,7 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-orange-600">
-              {t("Products")}
+              {t("leChatelier.controls.products")}
             </span>
             <span className="text-white font-medium">
               {analytics.productCount} ({analytics.percentProducts.toFixed(1)}%)
@@ -168,12 +168,12 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
       <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
         <h3 className="flex items-center gap-2 text-sm font-medium text-gray-400 mb-3">
           <Activity className="w-4 h-4 text-amber-600" />
-          {t("Reaction Rates")}
+          {t("leChatelier.analytics.reactionRates")}
         </h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-400">
-              {t("Forward Reaction Rate")}
+              {t("leChatelier.analytics.forwardRate")}
             </span>
             <div className="flex items-center gap-2">
               <div className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -189,7 +189,7 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-400">
-              {t("Reverse Reaction Rate")}
+              {t("leChatelier.analytics.reverseRate")}
             </span>
             <div className="flex items-center gap-2">
               <div className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -209,14 +209,14 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
       {/* Current Conditions */}
       <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/50">
         <h3 className="text-sm font-medium text-gray-400 mb-3">
-          {t("Current Conditions")}
+          {t("leChatelier.controls.currentConditions")}
         </h3>
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/30">
             <Thermometer className="w-4 h-4 text-rose-600" />
             <div>
               <p className="text-xs text-gray-400">
-                {t("Temperature")}
+                {t("leChatelier.controls.temperature")}
               </p>
               <p className="text-sm font-bold text-white">
                 {analytics.temperature} K
@@ -227,7 +227,7 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
             <Gauge className="w-4 h-4 text-amber-600" />
             <div>
               <p className="text-xs text-gray-400">
-                {t("Pressure")}
+                {t("leChatelier.controls.pressure")}
               </p>
               <p className="text-sm font-bold text-white">
                 {analytics.pressure.toFixed(1)} atm

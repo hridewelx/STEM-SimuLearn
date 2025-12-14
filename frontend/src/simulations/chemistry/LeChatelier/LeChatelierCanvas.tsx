@@ -637,11 +637,11 @@ const LeChatelierCanvas = ({
 
   return (
     <div className="w-full h-auto flex flex-col items-stretch gap-3">
-      {/* Controls Bar */}
-      <div className="flex items-center justify-between w-full px-2 gap-4">
+      {/* Controls Bar - Responsive */}
+      <div className="flex flex-col sm:flex-row items-center justify-between w-full px-2 gap-3 sm:gap-4">
         <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
           <span
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: REACTANT_COLOR }}
           >
             {selectedReaction.reactants.map((r, i) => (
@@ -684,7 +684,7 @@ const LeChatelierCanvas = ({
 
         <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
           <span
-            className="text-sm font-medium"
+            className="text-xs sm:text-sm font-medium"
             style={{ color: PRODUCT_COLOR }}
           >
             {selectedReaction.products.map((p, i) => (
@@ -714,15 +714,18 @@ const LeChatelierCanvas = ({
         </div>
       </div>
 
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        className="rounded-xl border-2 border-gray-600 shadow-2xl"
-      />
+      <div className="w-full overflow-auto">
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="rounded-xl border-2 border-gray-600 shadow-2xl mx-auto block"
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
+      </div>
 
       {/* Compact Color Legend - Always Below Canvas */}
-      <div className="flex items-center justify-center gap-6 px-6 py-3 bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg">
+      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 px-4 sm:px-6 py-3 bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg">
         <div className="flex items-center gap-2">
           <div
             className="w-5 h-5 rounded-full border-2 border-white shadow-md"

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Particle, DiffusionParams } from "../../../types/simulation";
+import { useTranslation } from "react-i18next";
 import {
   createParticles,
   updateParticles,
@@ -25,6 +26,7 @@ const DiffusionCanvas = ({
 
   showScale,
 }: DiffusionCanvasProps) => {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [leftTemp, setLeftTemp] = useState(params.leftTemp);
@@ -181,81 +183,110 @@ const DiffusionCanvas = ({
   ).length;
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Data Display - Minimized with Divider */}
-      <div className="bg-gray-800/90 text-white rounded-lg p-3 mb-4 backdrop-blur-sm border border-gray-700 shadow-xl w-full max-w-[1000px]">
-        <div className="flex">
+    <div className="flex flex-col items-center w-full">
+      {/* Data Display - Responsive Grid */}
+      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 text-white rounded-xl p-4 mb-4 backdrop-blur-sm border border-gray-700/60 shadow-xl w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Left Side Data */}
-          <div className="flex-1 pr-4 border-r border-gray-500/50">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <span className="text-xs font-medium">Left Chamber</span>
+          <div className="p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 bg-blue-400 rounded-full shadow-lg shadow-blue-400/50"></div>
+              <span className="text-sm font-semibold text-blue-300">
+                {t("diffusion.chamber.left")}
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span>Total Particles:</span>
-                <span className="font-mono">{leftCount}</span>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">
+                  {t("diffusion.chamber.total_particles")}:
+                </span>
+                <span className="font-mono font-bold text-white bg-gray-800 px-2 py-0.5 rounded">
+                  {leftCount}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-blue-300">Blue Particles:</span>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-400">
+                  {t("diffusion.chamber.blue_particles")}:
+                </span>
                 <span className="font-mono text-blue-300">
                   {leftBlueParticles}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-red-300">Red Particles:</span>
+              <div className="flex justify-between items-center">
+                <span className="text-red-400">
+                  {t("diffusion.chamber.red_particles")}:
+                </span>
                 <span className="font-mono text-red-300">
                   {leftRedParticles}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-blue-300">Left Chamber Temperature:</span>
-                <span className="font-mono text-blue-300">{leftTemp}k</span>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+                <span className="text-cyan-400">
+                  {t("diffusion.chamber.temperature")}:
+                </span>
+                <span className="font-mono font-bold text-cyan-300">
+                  {leftTemp}K
+                </span>
               </div>
             </div>
           </div>
 
           {/* Right Side Data */}
-          <div className="flex-1 pl-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-              <span className="text-xs font-medium">Right Chamber</span>
+          <div className="p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 bg-red-400 rounded-full shadow-lg shadow-red-400/50"></div>
+              <span className="text-sm font-semibold text-red-300">
+                {t("diffusion.chamber.right")}
+              </span>
             </div>
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span>Total Particles:</span>
-                <span className="font-mono">{rightCount}</span>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">
+                  {t("diffusion.chamber.total_particles")}:
+                </span>
+                <span className="font-mono font-bold text-white bg-gray-800 px-2 py-0.5 rounded">
+                  {rightCount}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-blue-300">Blue Particles:</span>
+              <div className="flex justify-between items-center">
+                <span className="text-blue-400">
+                  {t("diffusion.chamber.blue_particles")}:
+                </span>
                 <span className="font-mono text-blue-300">
                   {rightBlueParticles}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-red-300">Red Particles:</span>
+              <div className="flex justify-between items-center">
+                <span className="text-red-400">
+                  {t("diffusion.chamber.red_particles")}:
+                </span>
                 <span className="font-mono text-red-300">
                   {rightRedParticles}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-blue-300">
-                  Right Chamber Temperature:
+              <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+                <span className="text-orange-400">
+                  {t("diffusion.chamber.temperature")}:
                 </span>
-                <span className="font-mono text-blue-300">{rightTemp}k</span>
+                <span className="font-mono font-bold text-orange-300">
+                  {rightTemp}K
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Canvas - Below Data Table */}
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        className="border-4 border-white rounded-lg shadow-2xl bg-black"
-      />
+      {/* Canvas - Responsive with max dimensions */}
+      <div className="w-full overflow-auto">
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="border-2 border-gray-600 rounded-xl shadow-2xl bg-gray-950 mx-auto block"
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
+      </div>
     </div>
   );
 };

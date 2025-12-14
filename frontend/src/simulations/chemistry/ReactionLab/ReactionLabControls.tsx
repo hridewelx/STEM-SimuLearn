@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Play,
   Pause,
@@ -35,6 +36,8 @@ const ReactionLabControls = ({
   onToggleRunning,
   onReset,
 }: ReactionLabControlsProps) => {
+  const { t, i18n } = useTranslation();
+  const isBn = i18n.language === "bn";
   const [showReason, setShowReason] = useState(false);
   const reactionTypes: {
     value: ReactionType;
@@ -102,13 +105,15 @@ const ReactionLabControls = ({
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <Beaker className="w-6 h-6 text-amber-600" />
-        <h2 className="text-xl font-bold text-white">Reaction Controls</h2>
+        <h2 className="text-xl font-bold text-white">
+          {t("reactionLab.panels.reactionControls")}
+        </h2>
       </div>
 
       {/* Reaction Type Selector */}
       <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
         <h3 className="text-sm font-semibold text-amber-600 mb-3">
-          Reaction Type
+          {t("reactionLab.controls.reactionType")}
         </h3>
         <div className="space-y-2">
           {reactionTypes.map((type) => (
@@ -138,7 +143,9 @@ const ReactionLabControls = ({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{type.icon}</span>
-                  <span className="text-white font-medium">{type.label}</span>
+                  <span className="text-white font-medium">
+                    {t(`reactionLab.controls.${type.value}`)}
+                  </span>
                 </div>
                 <div className="text-gray-400 text-xs font-mono mt-1">
                   {type.description}
@@ -152,7 +159,7 @@ const ReactionLabControls = ({
       {/* Reactants Selection */}
       <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
         <h3 className="text-sm font-semibold text-cyan-600 mb-3">
-          Select Reactants
+          {t("reactionLab.controls.selectReactants")}
         </h3>
 
         {/* Composition */}
@@ -167,7 +174,9 @@ const ReactionLabControls = ({
                 onChange={(e) => onParamsChange({ elementA: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               >
-                <option value="">Select Element A</option>
+                <option value="">
+                  {t("reactionLab.controls.selectReactants")}
+                </option>
                 {COMBINATION_ELEMENTS_A.map((el) => (
                   <option key={el.symbol} value={el.symbol}>
                     {el.symbol} - {el.name} ({el.molarMass} g/mol)
@@ -222,14 +231,14 @@ const ReactionLabControls = ({
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1">
-                Acid 🔴
+                {t("reactionLab.controls.acid")} 🔴
               </label>
               <select
                 value={params.acid || ""}
                 onChange={(e) => onParamsChange({ acid: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-800 border border-red-900/50 rounded-lg text-white text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
-                <option value="">Select Acid</option>
+                <option value="">{t("reactionLab.controls.selectAcid")}</option>
                 {ACIDS.map((acid) => (
                   <option key={acid.symbol} value={acid.symbol}>
                     {acid.symbol} - {acid.name} ({acid.molarMass} g/mol)
@@ -239,14 +248,14 @@ const ReactionLabControls = ({
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1">
-                Base 🔵
+                {t("reactionLab.controls.base")} 🔵
               </label>
               <select
                 value={params.base || ""}
                 onChange={(e) => onParamsChange({ base: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-800 border border-blue-900/50 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Select Base</option>
+                <option value="">{t("reactionLab.controls.selectBase")}</option>
                 {BASES.map((base) => (
                   <option key={base.symbol} value={base.symbol}>
                     {base.symbol} - {base.name} ({base.molarMass} g/mol)
@@ -402,7 +411,13 @@ const ReactionLabControls = ({
                     reaction.valid ? "text-green-300" : "text-red-300"
                   }`}
                 >
-                  {reaction.valid ? "Reaction Possible!" : "No Reaction"}
+                  {reaction.valid
+                    ? isBn
+                      ? "বিক্রিয়া সম্ভব!"
+                      : "Reaction Possible!"
+                    : isBn
+                    ? "কোনো বিক্রিয়া নেই"
+                    : "No Reaction"}
                 </div>
                 <button
                   onClick={() => setShowReason(!showReason)}
@@ -422,12 +437,19 @@ const ReactionLabControls = ({
                   {/* Scientific Analysis */}
                   <div>
                     <p className="text-xs font-bold text-blue-300 uppercase mb-1 tracking-wide">
-                      📋 Scientific Analysis
+                      📋 {isBn ? "বৈজ্ঞানিক বিশ্লেষণ" : "Scientific Analysis"}
                     </p>
                     <p className="text-xs text-blue-100 leading-relaxed whitespace-pre-wrap">
-                      {reaction.explanation ||
-                        reaction.errorMessage ||
-                        "No detailed explanation available for this reaction."}
+                      {(isBn
+                        ? reaction.explanation_bn
+                        : reaction.explanation) ||
+                        (isBn ? reaction.explanation : reaction.explanation) || // Fallback to English explanation
+                        (isBn
+                          ? reaction.errorMessage_bn
+                          : reaction.errorMessage) ||
+                        (isBn
+                          ? "এই বিক্রিয়ার জন্য বিস্তারিত ব্যাখ্যা উপলব্ধ নেই।"
+                          : "No detailed explanation available for this reaction.")}
                     </p>
                   </div>
 
@@ -435,10 +457,12 @@ const ReactionLabControls = ({
                   {reaction.conditions && (
                     <div>
                       <p className="text-xs font-bold text-yellow-300 uppercase mb-1 tracking-wide">
-                        🔬 Required Conditions
+                        🔬 {isBn ? "প্রয়োজনীয় শর্ত" : "Required Conditions"}
                       </p>
                       <p className="text-xs text-yellow-100 leading-relaxed">
-                        {reaction.conditions}
+                        {(isBn
+                          ? reaction.conditions_bn
+                          : reaction.conditions) || reaction.conditions}
                       </p>
                     </div>
                   )}
@@ -447,10 +471,12 @@ const ReactionLabControls = ({
                   {reaction.howToPerform && (
                     <div>
                       <p className="text-xs font-bold text-green-300 uppercase mb-1 tracking-wide">
-                        🧪 How to Perform
+                        🧪 {isBn ? "কিভাবে করবেন" : "How to Perform"}
                       </p>
                       <p className="text-xs text-green-100 leading-relaxed">
-                        {reaction.howToPerform}
+                        {(isBn
+                          ? reaction.howToPerform_bn
+                          : reaction.howToPerform) || reaction.howToPerform}
                       </p>
                     </div>
                   )}
@@ -462,12 +488,14 @@ const ReactionLabControls = ({
                   </div>
                   {reaction.errorMessage && (
                     <p className="text-xs text-rose-600 mt-2">
-                      {reaction.errorMessage}
+                      {isBn ? reaction.errorMessage_bn : reaction.errorMessage}
                     </p>
                   )}
                   {reaction.warning && (
                     <p className="text-xs text-amber-400 mt-2">
-                      ⚠️ {reaction.warning}
+                      ⚠️{" "}
+                      {(isBn ? reaction.warning_bn : reaction.warning) ||
+                        reaction.warning}
                     </p>
                   )}
                 </>
@@ -496,12 +524,12 @@ const ReactionLabControls = ({
           {isRunning ? (
             <>
               <Pause className="w-5 h-5" />
-              <span>Pause</span>
+              <span>{t("reactionLab.actions.pause")}</span>
             </>
           ) : (
             <>
               <Play className="w-5 h-5" />
-              <span>Start Reaction</span>
+              <span>{t("reactionLab.actions.start")}</span>
             </>
           )}
         </button>

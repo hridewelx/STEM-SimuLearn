@@ -1,28 +1,33 @@
-import React from 'react';
-import { ConcaveMirrorParams } from './types';
-import { Sliders, Eye, Sparkles } from 'lucide-react';
+import React from "react";
+import { ConcaveMirrorParams } from "./types";
+import { Sliders, Eye, Sparkles } from "lucide-react";
 
 interface ConcaveMirrorControlsProps {
   params: ConcaveMirrorParams;
   onParamsChange: (newParams: Partial<ConcaveMirrorParams>) => void;
 }
 
+import { useTranslation } from "react-i18next";
+
 const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
   params,
   onParamsChange,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-4">
-        <Sliders className="w-5 h-5 text-blue-600" />
-        <h3 className="text-xl font-bold text-white">Simulation Controls</h3>
+        <Sliders className="w-5 h-5 text-blue-400" />
+        <h3 className="text-xl font-bold text-white">
+          {t("concaveMirror.controls.title")}
+        </h3>
       </div>
 
       {/* Object Distance */}
       <div className="space-y-2">
-        <label className="flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Object Distance (u)</span>
-          <span className="text-blue-600">{params.objectDistance} cm</span>
+        <label className="flex items-center justify-between text-sm font-medium text-gray-300">
+          <span>{t("concaveMirror.controls.objectDistance")}</span>
+          <span className="text-blue-400">{params.objectDistance} cm</span>
         </label>
         <input
           type="range"
@@ -35,7 +40,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-gray-500">
           <span>2 cm (min)</span>
           <span>200 cm</span>
         </div>
@@ -43,8 +48,8 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
 
       {/* Focal Length */}
       <div className="space-y-2">
-        <label className="flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Focal Length (f)</span>
+        <label className="flex items-center justify-between text-sm font-medium text-gray-300">
+          <span>{t("concaveMirror.controls.focalLength")}</span>
           <span className="text-amber-400">{params.focalLength} cm</span>
         </label>
         <input
@@ -58,7 +63,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-gray-500">
           <span>5 cm</span>
           <span>50 cm</span>
         </div>
@@ -66,9 +71,9 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
 
       {/* Object Height */}
       <div className="space-y-2">
-        <label className="flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Object Height (h)</span>
-          <span className="text-emerald-600">{params.objectHeight} cm</span>
+        <label className="flex items-center justify-between text-sm font-medium text-gray-300">
+          <span>{t("concaveMirror.controls.objectHeight")}</span>
+          <span className="text-green-400">{params.objectHeight} cm</span>
         </label>
         <input
           type="range"
@@ -81,7 +86,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-500"
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-gray-500">
           <span>5 cm</span>
           <span>50 cm</span>
         </div>
@@ -89,8 +94,8 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
 
       {/* Mirror Aperture */}
       <div className="space-y-2">
-        <label className="flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Mirror Length</span>
+        <label className="flex items-center justify-between text-sm font-medium text-gray-300">
+          <span>{t("concaveMirror.controls.mirrorLength")}</span>
           <span className="text-teal-400">{params.mirrorAperture} cm</span>
         </label>
         <input
@@ -104,7 +109,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-gray-500">
           <span>10 cm</span>
           <span>{Math.min(params.focalLength * 4, 200)} cm (max 4f)</span>
         </div>
@@ -117,62 +122,62 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
       <div className="space-y-3">
         <h4 className="text-sm font-semibold text-gray-400 flex items-center gap-2">
           <Eye className="w-4 h-4" />
-          Display Options
+          {t("concaveMirror.controls.displayOptions")}
         </h4>
 
         <label className="flex items-center justify-between cursor-pointer group">
-          <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-            Show Rays
+          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+            {t("concaveMirror.controls.showRays")}
           </span>
           <div
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              params.showRays ? 'bg-red-500' : 'bg-gray-600'
+              params.showRays ? "bg-red-500" : "bg-gray-700"
             }`}
             onClick={() => onParamsChange({ showRays: !params.showRays })}
           >
             <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-gray-800 rounded-full transition-transform ${
-                params.showRays ? 'translate-x-6' : 'translate-x-0'
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                params.showRays ? "translate-x-6" : "translate-x-0"
               }`}
             ></div>
           </div>
         </label>
 
         <label className="flex items-center justify-between cursor-pointer group">
-          <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-            Show Focal Point
+          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+            {t("concaveMirror.controls.showFocalPoint")}
           </span>
           <div
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              params.showFocalPoint ? 'bg-amber-500' : 'bg-gray-600'
+              params.showFocalPoint ? "bg-amber-500" : "bg-gray-700"
             }`}
             onClick={() =>
               onParamsChange({ showFocalPoint: !params.showFocalPoint })
             }
           >
             <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-gray-800 rounded-full transition-transform ${
-                params.showFocalPoint ? 'translate-x-6' : 'translate-x-0'
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                params.showFocalPoint ? "translate-x-6" : "translate-x-0"
               }`}
             ></div>
           </div>
         </label>
 
         <label className="flex items-center justify-between cursor-pointer group">
-          <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-            Show Measurements
+          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+            {t("concaveMirror.controls.showMeasurements")}
           </span>
           <div
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              params.showMeasurements ? 'bg-purple-500' : 'bg-gray-600'
+              params.showMeasurements ? "bg-purple-500" : "bg-gray-700"
             }`}
             onClick={() =>
               onParamsChange({ showMeasurements: !params.showMeasurements })
             }
           >
             <div
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-gray-800 rounded-full transition-transform ${
-                params.showMeasurements ? 'translate-x-6' : 'translate-x-0'
+              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                params.showMeasurements ? "translate-x-6" : "translate-x-0"
               }`}
             ></div>
           </div>
@@ -186,7 +191,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
       <div className="space-y-3">
         <h4 className="text-sm font-semibold text-gray-400 flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
-          Quick Positions
+          {t("concaveMirror.controls.quickPositions.title")}
         </h4>
 
         <button
@@ -198,7 +203,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all"
         >
-          Beyond C (u &gt; 2f)
+          {t("concaveMirror.controls.quickPositions.beyondC")}
         </button>
 
         <button
@@ -210,7 +215,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-purple-600 transition-all"
         >
-          At C (u = 2f)
+          {t("concaveMirror.controls.quickPositions.atC")}
         </button>
 
         <button
@@ -222,7 +227,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-green-600 transition-all"
         >
-          Between C and F
+          {t("concaveMirror.controls.quickPositions.betweenCandF")}
         </button>
 
         <button
@@ -234,7 +239,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium rounded-lg hover:from-amber-700 hover:to-amber-600 transition-all"
         >
-          At F (u = f)
+          {t("concaveMirror.controls.quickPositions.atF")}
         </button>
 
         <button
@@ -246,7 +251,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
           }
           className="w-full px-4 py-2 bg-gradient-to-r from-pink-600 to-pink-500 text-white text-sm font-medium rounded-lg hover:from-pink-700 hover:to-pink-600 transition-all"
         >
-          Between F and Mirror
+          {t("concaveMirror.controls.quickPositions.betweenFandMirror")}
         </button>
       </div>
 
@@ -264,7 +269,7 @@ const ConcaveMirrorControls: React.FC<ConcaveMirrorControlsProps> = ({
         }
         className="w-full mt-4 px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-all"
       >
-        Reset to Default
+        {t("concaveMirror.controls.reset")}
       </button>
     </div>
   );

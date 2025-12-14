@@ -264,7 +264,7 @@ const ConvexLensCanvas = ({ params }: ConvexLensCanvasProps) => {
       ref={canvasRef}
       width={1400}
       height={700}
-      className="w-full h-auto bg-gray-900 rounded-xl border-2 border-gray-700"
+      className="w-full h-auto bg-white rounded-xl border-2 border-gray-200"
       style={{ maxHeight: '80vh' }}
     />
   );

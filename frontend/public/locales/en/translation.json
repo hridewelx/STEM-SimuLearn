@@ -55,19 +55,240 @@
     "title": "Equilibrium Visualization"
   },
   "diffusion": {
+    "title": "Diffusion Simulation",
+    "subtitle": "Particle Movement & Thermal Dynamics",
+    "status": {
+      "running": "Running",
+      "paused": "Paused",
+      "divided": "⊥ Divided",
+      "mixing": "↔ Mixing"
+    },
+    "chamber": {
+      "title": "Diffusion Chamber",
+      "left": "Left Chamber",
+      "right": "Right Chamber",
+      "total_particles": "Total Particles",
+      "blue_particles": "Blue Particles",
+      "red_particles": "Red Particles",
+      "temperature": "Temperature"
+    },
     "controls": {
+      "title": "Simulation Controls",
       "particle_count": "Number of Particles",
+      "blue": "Blue",
+      "red": "Red",
       "mass": "Mass (AMU)",
+      "blue_mass": "Blue Mass",
+      "red_mass": "Red Mass",
       "radius": "Radius (pm)",
+      "blue_radius": "Blue Radius",
+      "red_radius": "Red Radius",
       "temperature": "Initial Temperature (K)",
+      "left_temp": "Left Temp",
+      "right_temp": "Right Temp",
       "remove_divider": "Remove Divider",
-      "center_of_mass": "Center of Mass",
-      "flow_rate": "Particle Flow Rate",
       "scale": "Scale",
-      "stopwatch": "Stopwatch",
       "speed": {
+        "label": "Speed",
         "normal": "Normal",
         "slow": "Slow"
+      },
+      "actions": {
+        "start": "Start",
+        "pause": "Pause",
+        "reset": "Reset"
+      }
+    }
+  },
+  "reactionLab": {
+    "title": "Advanced Reaction Lab",
+    "viewMode": {
+      "visual": "Visual Lab",
+      "molecular": "Molecular"
+    },
+    "status": {
+      "running": "Running",
+      "ready": "Ready"
+    },
+    "panels": {
+      "controls": "Controls",
+      "analytics": "Analytics",
+      "reactionControls": "Reaction Controls",
+      "reactionAnalytics": "Reaction Analytics"
+    },
+    "canvas": {
+      "visualLab": "Visual Chemistry Lab",
+      "molecularSim": "Molecular Simulation",
+      "progress": "Progress"
+    },
+    "controls": {
+      "reactionType": "Reaction Type",
+      "composition": "Composition",
+      "decomposition": "Decomposition",
+      "acidBase": "Acid-Base",
+      "singleReplacement": "Single Replacement",
+      "selectReactants": "Select Reactants",
+      "acid": "Acid",
+      "base": "Base",
+      "selectAcid": "Select Acid",
+      "selectBase": "Select Base"
+    },
+    "analytics": {
+      "balancedEquation": "Balanced Equation",
+      "selectValid": "Select valid reactants",
+      "reactionProgress": "Reaction Progress",
+      "reactionRate": "Reaction Rate",
+      "productsFormed": "Products Formed",
+      "totalMass": "Total Mass",
+      "energy": "Energy",
+      "neutral": "Neutral",
+      "stoichiometricRate": "Stoichiometric Rate",
+      "yieldAnalysis": "Yield Analysis",
+      "theoreticalYield": "Theoretical Yield",
+      "percentYield": "Percent Yield"
+    },
+    "actions": {
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "expand": "Expand",
+      "exitFullscreen": "Exit Fullscreen"
+    }
+  },
+  "leChatelier": {
+    "title": "Le Chatelier's Principle",
+    "subtitle": "Equilibrium & Stress Response",
+    "panels": {
+      "controls": "System Controls",
+      "analytics": "Real-time Analytics"
+    },
+    "controls": {
+      "selectReaction": "Select Reaction",
+      "temperature": "Temperature",
+      "pressure": "Pressure",
+      "initialConcentrations": "Initial Concentrations",
+      "reactants": "Reactants",
+      "products": "Products",
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "cold": "Cold",
+      "hot": "Hot",
+      "low": "Low",
+      "high": "High",
+      "currentConditions": "Current Conditions",
+      "exothermic": "Exothermic",
+      "endothermic": "Endothermic",
+      "shiftLeft": "Shift Left",
+      "shiftRight": "Shift Right",
+      "noEffect": "No Effect"
+    },
+    "analytics": {
+      "equilibriumAnalysis": "Equilibrium Analysis",
+      "reactionQuotient": "Reaction Quotient",
+      "equilibriumQuotient": "Equilibrium Quotient",
+      "particleDistribution": "Particle Distribution",
+      "reactionRates": "Reaction Rates",
+      "forwardRate": "Forward Reaction Rate",
+      "reverseRate": "Reverse Reaction Rate",
+      "systemAtEquilibrium": "System at Equilibrium",
+      "systemAdjusting": "System Adjusting...",
+      "shiftingProducts": "Shifting Products",
+      "shiftingReactants": "Shifting Reactants",
+      "atEquilibrium": "At Equilibrium"
+    },
+    "status": {
+      "ready": "Ready",
+      "running": "Running",
+      "balanced": "Balanced",
+      "transitioning": "Transitioning State",
+      "right": "Right",
+      "left": "Left"
+    },
+    "canvas": {
+      "title": "Equilibrium Chamber",
+      "statusLabel": "Status:"
+    }
+  },
+  "concaveMirror": {
+    "title": "Concave Mirror",
+    "panels": {
+      "controls": "Controls",
+      "analytics": "Analytics"
+    },
+    "controls": {
+      "title": "Simulation Controls",
+      "objectDistance": "Object Distance (u)",
+      "focalLength": "Focal Length (f)",
+      "objectHeight": "Object Height (h)",
+      "mirrorLength": "Mirror Length",
+      "displayOptions": "Display Options",
+      "showRays": "Show Rays",
+      "showFocalPoint": "Show Focal Point",
+      "showMeasurements": "Show Measurements",
+      "quickPositions": {
+        "title": "Quick Positions",
+        "beyondC": "Beyond C (u > 2f)",
+        "atC": "At C (u = 2f)",
+        "betweenCandF": "Between C and F",
+        "atF": "At F (u = f)",
+        "betweenFandMirror": "Between F and Mirror"
+      },
+      "reset": "Reset to Default"
+    },
+    "analytics": {
+      "title": "Image Analytics",
+      "imageDistance": "Image Distance (v)",
+      "magnification": "Magnification (m)",
+      "imageType": "Image Type",
+      "orientation": "Orientation",
+      "mirrorFormula": "Mirror Formula",
+      "positionSummary": "Position Summary",
+      "signConvention": "Sign Convention",
+      "values": {
+        "infinity": "∞",
+        "atInfinity": "At infinity",
+        "inFront": "In front of mirror",
+        "behind": "Behind mirror",
+        "enlarged": "Enlarged",
+        "sameSize": "Same size",
+        "diminished": "Diminished",
+        "noImage": "No Image",
+        "real": "Real",
+        "virtual": "Virtual",
+        "formedAtInfinity": "Formed at infinity",
+        "canBeProjected": "Can be projected",
+        "cannotBeProjected": "Cannot be projected",
+        "inverted": "Inverted",
+        "erect": "Erect",
+        "notApplicable": "Not applicable",
+        "upsideDown": "Upside down",
+        "upright": "Upright"
+      },
+      "descriptions": {
+        "objectPosition": "Object Position:",
+        "imageFormsBetween": "• Image forms between F and C",
+        "realInvertedDiminished": "• Real, inverted, and diminished",
+        "examplePhoto": "• Example: Photography, telescopes",
+        "imageFormsAtC": "• Image forms at C",
+        "realInvertedSame": "• Real, inverted, same size",
+        "objectImageSameDist": "• Object and image at same distance",
+        "imageFormsBeyondC": "• Image forms beyond C",
+        "realInvertedEnlarged": "• Real, inverted, and enlarged",
+        "usedSolar": "• Used in solar furnaces",
+        "imageAtInfinity": "• Image at infinity",
+        "realHighlyEnlarged": "• Real, highly enlarged",
+        "usedSearchlights": "• Used in searchlights, headlights",
+        "imageBehindMirror": "• Image behind mirror",
+        "virtualErectEnlarged": "• Virtual, erect, and enlarged",
+        "usedShaving": "• Used in shaving mirrors, dental mirrors"
+      },
+      "signRules": {
+        "pole": "• Distances measured from mirror pole",
+        "uNegative": "• Object distance (u) is negative",
+        "fNegative": "• Focal length (f) is negative for concave",
+        "vReal": "• Real images: v is negative (in front)",
+        "vVirtual": "• Virtual images: v is positive (behind)"
       }
     }
   },
@@ -139,6 +360,92 @@
     "learning_goals": "learning goals",
     "duration_value": "{{count}} minutes",
     "objectives_count": "{{count}} learning goals"
+  },
+  "features": {
+    "title_part1": "Four Disciplines,",
+    "title_part2": "Endless Possibilities",
+    "description": "Access a comprehensive suite of interactive simulations designed to make complex concepts easy to understand",
+    "cards": {
+      "physics": {
+        "title": "Physics Simulations",
+        "description": "Explore mechanics, thermodynamics, electromagnetism, and quantum physics through interactive experiments.",
+        "action": "Explore Physics"
+      },
+      "chemistry": {
+        "title": "Chemistry Lab",
+        "description": "Perform virtual chemical reactions, explore molecular structures, and understand chemical principles safely.",
+        "action": "Explore Chemistry"
+      },
+      "biology": {
+        "title": "Biology Exploration",
+        "description": "Dive into cellular processes, genetics, ecosystems, and human anatomy with detailed visualizations.",
+        "action": "Explore Biology"
+      },
+      "math": {
+        "title": "Mathematics Toolkit",
+        "description": "Visualize functions, solve equations, explore geometry, and understand statistical concepts interactively.",
+        "action": "Explore Mathematics"
+      }
+    },
+    "extra": {
+      "collaboration": {
+        "title": "Real-time Collaboration",
+        "description": "Work together with classmates on experiments in real-time"
+      },
+      "progress": {
+        "title": "Progress Tracking",
+        "description": "Monitor your learning journey with detailed analytics"
+      },
+      "curriculum": {
+        "title": "Curriculum Aligned",
+        "description": "Content aligned with international science standards"
+      }
+    }
+  },
+  "stats": {
+    "trusted": {
+      "title": "Trusted by",
+      "subtitle": "Educators Worldwide",
+      "description": "Join thousands of students and educators revolutionizing STEM education with interactive learning"
+    },
+    "items": {
+      "simulations": "Interactive Simulations",
+      "students": "Active Students",
+      "schools": "Schools & Universities",
+      "rating": "Average Rating"
+    },
+    "testimonials": {
+      "title": "What Our Community Says",
+      "subtitle": "Hear from students, teachers, and educators using LabVerse",
+      "items": [
+        {
+          "text": "LabVerse transformed how my students understand physics. The interactive simulations make abstract concepts tangible and engaging.",
+          "author": "Dr. Sarah Johnson",
+          "role": "Physics Teacher, Stanford High"
+        },
+        {
+          "text": "As a visual learner, I struggled with chemistry until I found this platform. Being able to manipulate molecules changed everything.",
+          "author": "Alex Chen",
+          "role": "University Student"
+        },
+        {
+          "text": "The curriculum-aligned content makes lesson planning so much easier. My students' engagement and test scores have significantly improved.",
+          "author": "Maria Garcia",
+          "role": "Science Department Head"
+        }
+      ]
+    }
+  },
+  "cta": {
+    "title": "Ready to Transform Your Learning Experience?",
+    "description": "Join thousands of students and educators who are already exploring science in a whole new way. Start your journey today—completely free!",
+    "start_button": "Start Exploring Free",
+    "learn_more": "Learn More",
+    "benefits": {
+      "no_card": "No credit card required",
+      "free": "Free forever",
+      "access": "Access all simulations"
+    }
   },
   "simulations": {
     "diffusion-1": {
