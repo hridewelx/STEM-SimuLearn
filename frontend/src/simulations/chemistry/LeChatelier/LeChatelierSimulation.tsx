@@ -9,7 +9,7 @@ import {
   RotateCcw,
   Scale,
 } from "lucide-react";
-import LeChatelierCanvas from "./LeChatelierCanvas";
+import LeChatelierCanvas from "./LeChatelierCanvas.tsx";
 import LeChatelierControls from "./LeChatelierControls";
 import LeChatelierAnalytics from "./LeChatelierAnalytics";
 import AITutorPanel from "../../../components/AITutorPanel";
@@ -94,19 +94,19 @@ const LeChatelierSimulation = () => {
   return (
     <div className="space-y-4">
       {/* Header Bar */}
-      <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl p-4">
+      <div className="bg-gradient-to-r from-gray-800/95 via-gray-800/90 to-gray-900/95 backdrop-blur-md rounded-2xl border border-gray-700/50 shadow-2xl p-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Title */}
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
-              <Scale className="w-5 h-5 text-purple-400" />
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-400/40 shadow-lg">
+              <Scale className="w-6 h-6 text-purple-300" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">
-                {t("le_chatelier.title")}
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Le Chatelier's Principle
               </h2>
-              <p className="text-xs text-gray-400">
-                {t("le_chatelier.subtitle")}
+              <p className="text-xs text-gray-300 font-medium">
+                Equilibrium & Stress Response
               </p>
             </div>
           </div>
@@ -125,9 +125,7 @@ const LeChatelierSimulation = () => {
                   isRunning ? "bg-green-400 animate-pulse" : "bg-gray-500"
                 }`}
               />
-              {isRunning
-                ? t("le_chatelier.status.running")
-                : t("le_chatelier.status.ready")}
+              {isRunning ? "Running" : "Ready"}
             </div>
 
             {/* LARGE PROMINENT STATUS */}
@@ -143,17 +141,17 @@ const LeChatelierSimulation = () => {
               {analytics.shiftDirection === "forward" ? (
                 <>
                   <span className="text-lg">→</span>
-                  <span>{t("le_chatelier.status.shifting_products")}</span>
+                  <span>Shifting Right (Products)</span>
                 </>
               ) : analytics.shiftDirection === "reverse" ? (
                 <>
                   <span className="text-lg">←</span>
-                  <span>{t("le_chatelier.status.shifting_reactants")}</span>
+                  <span>Shifting Left (Reactants)</span>
                 </>
               ) : (
                 <>
-                  <span>⚖️</span>
-                  <span>{t("le_chatelier.status.equilibrium")}</span>
+                  <span className="text-lg">⇌</span>
+                  <span>At Equilibrium</span>
                 </>
               )}
             </div>
@@ -174,7 +172,7 @@ const LeChatelierSimulation = () => {
           }`}
         >
           <Settings className="w-4 h-4" />
-          <span>{t("le_chatelier.controls.title")}</span>
+          <span>System Controls</span>
         </button>
         <button
           onClick={() =>
@@ -187,7 +185,7 @@ const LeChatelierSimulation = () => {
           }`}
         >
           <BarChart3 className="w-4 h-4" />
-          <span>{t("le_chatelier.analytics.title")}</span>
+          <span>Real-time Analytics</span>
         </button>
       </div>
 
@@ -218,13 +216,11 @@ const LeChatelierSimulation = () => {
         {/* Left Panel - Controls (Desktop) */}
         {!isFullscreen && (
           <div className="hidden lg:block">
-            <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden sticky top-4">
-              <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 px-4 py-3 border-b border-gray-700/50">
+            <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/70 backdrop-blur-md rounded-2xl border border-gray-700/60 shadow-2xl overflow-hidden sticky top-4">
+              <div className="bg-gradient-to-r from-yellow-500/15 to-orange-500/15 px-4 py-3 border-b border-gray-700/60">
                 <div className="flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-yellow-400" />
-                  <h2 className="font-semibold text-white">
-                    {t("le_chatelier.controls.title")}
-                  </h2>
+                  <Settings className="w-5 h-5 text-yellow-300" />
+                  <h2 className="font-bold text-white">System Controls</h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
@@ -242,36 +238,36 @@ const LeChatelierSimulation = () => {
 
         {/* Center - Simulation Canvas */}
         <div className={`${isFullscreen ? "col-span-1" : ""}`}>
-          <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-br from-gray-800/70 via-gray-800/60 to-gray-900/70 backdrop-blur-md rounded-2xl border border-gray-700/60 shadow-2xl overflow-hidden">
             {/* Canvas Header */}
-            <div className="px-4 py-3 border-b border-gray-700/50 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+            <div className="px-4 py-3 border-b border-gray-700/50 bg-gradient-to-r from-purple-500/15 via-purple-500/10 to-pink-500/15">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Scale className="w-5 h-5 text-purple-400" />
-                  <h2 className="font-semibold text-white">
-                    {t("le_chatelier.visualization.title")}
+                  <Scale className="w-5 h-5 text-purple-300" />
+                  <h2 className="font-bold text-white tracking-wide">
+                    Equilibrium Chamber
                   </h2>
                 </div>
                 <div className="flex items-center gap-3">
                   {/* Equilibrium Status */}
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-gray-400 hidden sm:inline">
-                      {t("le_chatelier.status.label")}
+                      Status:
                     </span>
                     <span
-                      className={`font-medium ${
+                      className={`font-medium px-2 py-1 rounded-md ${
                         analytics.shiftDirection === "forward"
-                          ? "text-orange-400"
+                          ? "text-orange-300 bg-orange-500/20"
                           : analytics.shiftDirection === "reverse"
-                          ? "text-blue-400"
-                          : "text-green-400"
+                          ? "text-blue-300 bg-blue-500/20"
+                          : "text-green-300 bg-green-500/20"
                       }`}
                     >
                       {analytics.shiftDirection === "forward"
-                        ? t("le_chatelier.status.products_arrow")
+                        ? "→ Right"
                         : analytics.shiftDirection === "reverse"
-                        ? t("le_chatelier.status.reactants_arrow")
-                        : t("le_chatelier.status.balanced_icon")}
+                        ? "← Left"
+                        : "⇌ Balanced"}
                     </span>
                   </div>
 
@@ -331,14 +327,15 @@ const LeChatelierSimulation = () => {
             <div
               className={`${
                 isFullscreen
-                  ? "h-[calc(100vh-300px)]"
-                  : "h-[450px] lg:h-[520px]"
-              } p-2`}
+                  ? "h-[calc(100vh-160px)] w-full flex items-center justify-center p-4"
+                  : "h-auto min-h-[450px] lg:min-h-[520px] p-2"
+              }`}
             >
               <LeChatelierCanvas
                 params={params}
                 isRunning={isRunning}
                 onAnalyticsUpdate={handleAnalyticsUpdate}
+                isFullscreen={isFullscreen}
               />
             </div>
           </div>
@@ -347,13 +344,11 @@ const LeChatelierSimulation = () => {
         {/* Right Panel - Analytics (Desktop) */}
         {!isFullscreen && (
           <div className="hidden lg:block">
-            <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden sticky top-4">
-              <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-4 py-3 border-b border-gray-700/50">
+            <div className="bg-gradient-to-br from-gray-800/70 to-gray-900/70 backdrop-blur-md rounded-2xl border border-gray-700/60 shadow-2xl overflow-hidden sticky top-4">
+              <div className="bg-gradient-to-r from-cyan-500/15 to-blue-500/15 px-4 py-3 border-b border-gray-700/60">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-cyan-400" />
-                  <h2 className="font-semibold text-white">
-                    {t("le_chatelier.analytics.title")}
-                  </h2>
+                  <BarChart3 className="w-5 h-5 text-cyan-300" />
+                  <h2 className="font-bold text-white">Real-time Analytics</h2>
                 </div>
               </div>
               <div className="p-4 max-h-[calc(100vh-280px)] overflow-y-auto custom-scrollbar">
@@ -386,6 +381,56 @@ const LeChatelierSimulation = () => {
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(107, 114, 128, 0.8);
+        }
+
+        /* Custom Range Slider Styles */
+        input[type="range"] {
+          -webkit-appearance: none;
+          appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
+          border: 2px solid #1f2937;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          transition: all 0.2s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+          transform: scale(1.15);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
+          border: 2px solid #1f2937;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          transition: all 0.2s ease;
+        }
+        
+        input[type="range"]::-moz-range-thumb:hover {
+          transform: scale(1.15);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        input[type="range"]:disabled::-webkit-slider-thumb {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+        
+        input[type="range"]:disabled::-moz-range-thumb {
+          cursor: not-allowed;
+          opacity: 0.5;
         }
       `}</style>
     </div>

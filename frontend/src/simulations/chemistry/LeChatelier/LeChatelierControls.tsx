@@ -39,7 +39,7 @@ const LeChatelierControls = ({
       <div className="space-y-3">
         <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
           <FlaskConical className="w-4 h-4 text-purple-400" />
-          {t("le_chatelier.controls.select_reaction")}
+          {t("Select Reaction")}
         </label>
 
         <div className="relative">
@@ -104,8 +104,8 @@ const LeChatelierControls = ({
           <div className="flex justify-between font-bold mb-1">
             <span>
               {selectedReaction.enthalpy < 0
-                ? `🔥 ${t("le_chatelier.controls.exothermic")}`
-                : `❄️ ${t("le_chatelier.controls.endothermic")}`}
+                ? `🔥 ${t("Exothermic")}`
+                : `❄️ ${t("Endothermic")}`}
             </span>
             <span>ΔH = {selectedReaction.enthalpy} kJ/mol</span>
           </div>
@@ -118,7 +118,7 @@ const LeChatelierControls = ({
         <label className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-sm font-medium text-gray-300">
             <Thermometer className="w-4 h-4 text-red-400" />
-            {t("le_chatelier.controls.temperature")}
+            {t("Temperature")}
           </span>
           <span className="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded">
             {params.temperature} K
@@ -133,19 +133,23 @@ const LeChatelierControls = ({
           onChange={(e) =>
             onParamsChange({ temperature: Number(e.target.value) })
           }
-          className="w-full h-2 rounded-full appearance-none cursor-pointer"
+          className="w-full h-2 rounded-full appearance-none cursor-pointer slider-temperature"
           style={{
-            background: `linear-gradient(to right, #3B82F6 0%, #EAB308 50%, #EF4444 100%)`,
+            background: `linear-gradient(to right, 
+              #3B82F6 0%, 
+              #EAB308 ${((params.temperature - 200) / 400) * 100}%, 
+              #4B5563 ${((params.temperature - 200) / 400) * 100}%, 
+              #4B5563 100%)`,
           }}
         />
         <div className="flex justify-between text-xs text-gray-500">
-          <span>200 K ({t("le_chatelier.controls.cold")})</span>
-          <span>600 K ({t("le_chatelier.controls.hot")})</span>
+          <span>200 K ({t("Cold")})</span>
+          <span>600 K ({t("Hot")})</span>
         </div>
         <p className="text-xs text-gray-500">
           {selectedReaction.enthalpy < 0
-            ? t("le_chatelier.controls.temp_shift_left")
-            : t("le_chatelier.controls.temp_shift_right")}
+            ? t("Temperature Shift Left")
+            : t("Temperature Shift Right")}
         </p>
       </div>
 
@@ -154,7 +158,7 @@ const LeChatelierControls = ({
         <label className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-sm font-medium text-gray-300">
             <Gauge className="w-4 h-4 text-yellow-400" />
-            {t("le_chatelier.controls.pressure")}
+            {t("Pressure")}
           </span>
           <span className="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded">
             {params.pressure.toFixed(1)} atm
@@ -167,11 +171,18 @@ const LeChatelierControls = ({
           step="0.1"
           value={params.pressure}
           onChange={(e) => onParamsChange({ pressure: Number(e.target.value) })}
-          className="w-full h-2 bg-gray-700 rounded-full appearance-none cursor-pointer"
+          className="w-full h-2 rounded-full appearance-none cursor-pointer"
+          style={{
+            background: `linear-gradient(to right, 
+              #3B82F6 0%, 
+              #3B82F6 ${((params.pressure - 0.5) / 2.5) * 100}%, 
+              #4B5563 ${((params.pressure - 0.5) / 2.5) * 100}%, 
+              #4B5563 100%)`,
+          }}
         />
         <div className="flex justify-between text-xs text-gray-500">
-          <span>{t("le_chatelier.controls.low")} (0.5 atm)</span>
-          <span>{t("le_chatelier.controls.high")} (3.0 atm)</span>
+          <span>{t("Low")} (0.5 atm)</span>
+          <span>{t("High")} (3.0 atm)</span>
         </div>
         <p className="text-xs text-gray-500">
           {(() => {
@@ -184,10 +195,10 @@ const LeChatelierControls = ({
               0
             );
             if (rGas === pGas)
-              return t("le_chatelier.controls.pressure_no_effect");
+              return t("Pressure No Effect");
             return rGas > pGas
-              ? t("le_chatelier.controls.pressure_shift_right")
-              : t("le_chatelier.controls.pressure_shift_left");
+              ? t("Pressure Shift Right")
+              : t("Pressure Shift Left");
           })()}
         </p>
       </div>
@@ -196,7 +207,7 @@ const LeChatelierControls = ({
       <div className="space-y-4">
         <h3 className="flex items-center gap-2 text-sm font-medium text-gray-300">
           <Beaker className="w-4 h-4 text-green-400" />
-          {t("le_chatelier.controls.initial_concentrations")}
+          {t("Initial Concentrations")}
         </h3>
 
         {/* Reactant Concentration */}
@@ -206,7 +217,7 @@ const LeChatelierControls = ({
               className="text-sm"
               style={{ color: selectedReaction.colorScheme.reactant }}
             >
-              {t("le_chatelier.controls.reactants")}
+              {t("Reactants")}
             </span>
             <span
               className="text-sm font-bold"
@@ -229,11 +240,15 @@ const LeChatelierControls = ({
               });
             }}
             disabled={isRunning}
-            className={`w-full h-2 bg-gray-700 rounded-full appearance-none ${
+            className={`w-full h-2 rounded-full appearance-none ${
               isRunning ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`}
             style={{
-              accentColor: selectedReaction.colorScheme.reactant,
+              background: `linear-gradient(to right, 
+                ${selectedReaction.colorScheme.reactant} 0%, 
+                ${selectedReaction.colorScheme.reactant} ${((params.reactantConcentration - 10) / 80) * 100}%, 
+                #4B5563 ${((params.reactantConcentration - 10) / 80) * 100}%, 
+                #4B5563 100%)`,
             }}
           />
         </div>
@@ -245,7 +260,7 @@ const LeChatelierControls = ({
               className="text-sm"
               style={{ color: selectedReaction.colorScheme.product }}
             >
-              {t("le_chatelier.controls.products")}
+              {t("Products")}
             </span>
             <span
               className="text-sm font-bold"
@@ -254,15 +269,31 @@ const LeChatelierControls = ({
               {params.productConcentration}%
             </span>
           </div>
-          <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${params.productConcentration}%`,
-                backgroundColor: selectedReaction.colorScheme.product,
-              }}
-            />
-          </div>
+          <input
+            type="range"
+            min="10"
+            max="90"
+            step="5"
+            value={params.productConcentration}
+            onChange={(e) => {
+              const product = Number(e.target.value);
+              onParamsChange({
+                productConcentration: product,
+                reactantConcentration: 100 - product,
+              });
+            }}
+            disabled={isRunning}
+            className={`w-full h-2 rounded-full appearance-none ${
+              isRunning ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            }`}
+            style={{
+              background: `linear-gradient(to right, 
+                ${selectedReaction.colorScheme.product} 0%, 
+                ${selectedReaction.colorScheme.product} ${((params.productConcentration - 10) / 80) * 100}%, 
+                #4B5563 ${((params.productConcentration - 10) / 80) * 100}%, 
+                #4B5563 100%)`,
+            }}
+          />
         </div>
       </div>
 
@@ -279,12 +310,12 @@ const LeChatelierControls = ({
           {isRunning ? (
             <>
               <Pause className="w-4 h-4" />
-              {t("le_chatelier.controls.pause")}
+              {t("Pause")}
             </>
           ) : (
             <>
               <Play className="w-4 h-4" />
-              {t("le_chatelier.controls.start")}
+              {t("Start")}
             </>
           )}
         </button>

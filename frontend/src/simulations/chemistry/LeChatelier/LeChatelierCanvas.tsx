@@ -12,12 +12,14 @@ interface LeChatelierCanvasProps {
   params: LeChatelierParams;
   isRunning: boolean;
   onAnalyticsUpdate: (data: LeChatelierAnalyticsData) => void;
+  isFullscreen?: boolean;
 }
 
 const LeChatelierCanvas = ({
   params,
   isRunning,
   onAnalyticsUpdate,
+  isFullscreen = false,
 }: LeChatelierCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<EquilibriumParticle[]>([]);
@@ -30,8 +32,9 @@ const LeChatelierCanvas = ({
     timestamp: number;
   }>({ text: "", color: "", timestamp: 0 });
 
-  const CANVAS_WIDTH = 800;
-  const CANVAS_HEIGHT = 450;
+  // Dynamically adjust canvas size based on fullscreen state
+  const CANVAS_WIDTH = isFullscreen ? 1200 : 700;
+  const CANVAS_HEIGHT = isFullscreen ? 650 : 380;
 
   // Get selected reaction details
   const selectedReaction =
@@ -232,6 +235,8 @@ const LeChatelierCanvas = ({
     params.temperature,
     REACTANT_COLOR,
     PRODUCT_COLOR,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
   ]);
 
   // Add Particle
@@ -268,7 +273,7 @@ const LeChatelierCanvas = ({
         });
       }
     },
-    [params.temperature, REACTANT_COLOR, PRODUCT_COLOR]
+    [params.temperature, REACTANT_COLOR, PRODUCT_COLOR, CANVAS_WIDTH, CANVAS_HEIGHT]
   );
 
   // Remove Particle
@@ -346,8 +351,8 @@ const LeChatelierCanvas = ({
     forwardProb = Math.min(0.2, forwardProb);
     reverseProb = Math.min(0.2, reverseProb);
 
-    // Execute reactions
-    // Forward: R -> P
+    // Execute reactions with gradual color transition
+    // Forward: R -> P (some stay purple longer)
     reactants.forEach((particle) => {
       if (
         Math.random() < forwardProb &&
@@ -355,16 +360,26 @@ const LeChatelierCanvas = ({
         reactants.length > 5
       ) {
         particle.isTransitioning = true;
+        
+        // Gradual transition: first to purple, then some stay purple
         particle.color = TRANSITION_COLOR;
+        
+        // 30% stay purple longer (500ms), 70% transition normally (300ms)
+        const transitionTime = Math.random() < 0.3 ? 500 : 300;
+        
         setTimeout(() => {
-          particle.type = "product";
-          particle.color = PRODUCT_COLOR;
-          particle.isTransitioning = false;
-        }, 300);
+          // Check if particle still exists
+          const stillExists = particlesRef.current.find(p => p.id === particle.id);
+          if (stillExists) {
+            stillExists.type = "product";
+            stillExists.color = PRODUCT_COLOR;
+            stillExists.isTransitioning = false;
+          }
+        }, transitionTime);
       }
     });
 
-    // Reverse: P -> R
+    // Reverse: P -> R (some stay purple longer)
     products.forEach((particle) => {
       if (
         Math.random() < reverseProb &&
@@ -372,12 +387,22 @@ const LeChatelierCanvas = ({
         products.length > 5
       ) {
         particle.isTransitioning = true;
+        
+        // Gradual transition: first to purple, then some stay purple
         particle.color = TRANSITION_COLOR;
+        
+        // 30% stay purple longer (500ms), 70% transition normally (300ms)
+        const transitionTime = Math.random() < 0.3 ? 500 : 300;
+        
         setTimeout(() => {
-          particle.type = "reactant";
-          particle.color = REACTANT_COLOR;
-          particle.isTransitioning = false;
-        }, 300);
+          // Check if particle still exists
+          const stillExists = particlesRef.current.find(p => p.id === particle.id);
+          if (stillExists) {
+            stillExists.type = "reactant";
+            stillExists.color = REACTANT_COLOR;
+            stillExists.isTransitioning = false;
+          }
+        }, transitionTime);
       }
     });
   }, [
@@ -569,6 +594,8 @@ const LeChatelierCanvas = ({
     REACTANT_COLOR,
     PRODUCT_COLOR,
     selectedReaction,
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
   ]);
 
   // Effects
@@ -599,15 +626,22 @@ const LeChatelierCanvas = ({
   }, [statusMessage.timestamp]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center gap-3">
+    <div className="w-full h-full flex flex-col items-stretch gap-3">
       {/* Controls Bar */}
-      <div className="flex items-center justify-between w-full max-w-[800px] px-2 gap-4">
+      <div className="flex items-center justify-between w-full px-2 gap-4">
         <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
           <span
             className="text-sm font-medium"
             style={{ color: REACTANT_COLOR }}
           >
-            Reactants:
+            {selectedReaction.reactants.map((r, i) => (
+              <span key={i}>
+                {i > 0 && " + "}
+                {r.coefficient > 1 && r.coefficient}
+                {r.name}
+              </span>
+            ))}
+            :
           </span>
           <button
             onClick={() => removeParticle("reactant")}
@@ -643,7 +677,14 @@ const LeChatelierCanvas = ({
             className="text-sm font-medium"
             style={{ color: PRODUCT_COLOR }}
           >
-            Products:
+            {selectedReaction.products.map((p, i) => (
+              <span key={i}>
+                {i > 0 && " + "}
+                {p.coefficient > 1 && p.coefficient}
+                {p.name}
+              </span>
+            ))}
+            :
           </span>
           <button
             onClick={() => removeParticle("product")}
@@ -667,8 +708,41 @@ const LeChatelierCanvas = ({
         ref={canvasRef}
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}
-        className="rounded-xl border-2 border-gray-600 shadow-2xl max-w-full"
+        className="rounded-xl border-2 border-gray-600 shadow-2xl"
       />
+
+      {/* Compact Color Legend - Always Below Canvas */}
+      <div className="flex items-center justify-center gap-6 px-6 py-3 bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg">
+        <div className="flex items-center gap-2">
+          <div
+            className="w-5 h-5 rounded-full border-2 border-white shadow-md"
+            style={{ backgroundColor: REACTANT_COLOR }}
+          />
+          <span className="text-sm font-semibold text-gray-200">
+            Reactants
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div
+            className="w-5 h-5 rounded-full border-2 border-white shadow-md"
+            style={{ backgroundColor: PRODUCT_COLOR }}
+          />
+          <span className="text-sm font-semibold text-gray-200">
+            Products
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div
+            className="w-5 h-5 rounded-full border-2 border-white shadow-md"
+            style={{ backgroundColor: TRANSITION_COLOR }}
+          />
+          <span className="text-sm font-semibold text-purple-300">
+            Transitioning State
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
