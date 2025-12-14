@@ -4,7 +4,6 @@ import {
   createParticles,
   updateParticles,
   handleCollisions,
-  calculateCenterOfMass,
   calculateTemperature,
 } from "../../../utils/particlePhysics";
 
@@ -13,7 +12,7 @@ interface DiffusionCanvasProps {
   isRunning: boolean;
   speed: "normal" | "slow";
   hasDivider: boolean;
-  showCenterOfMass: boolean;
+
   showScale: boolean;
   onReset: () => void;
 }
@@ -23,7 +22,7 @@ const DiffusionCanvas = ({
   isRunning,
   speed,
   hasDivider,
-  showCenterOfMass,
+
   showScale,
 }: DiffusionCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -135,42 +134,6 @@ const DiffusionCanvas = ({
       ctx.fill();
     });
 
-    // Draw center of mass
-    if (showCenterOfMass && particles.length > 0) {
-      const leftParticles = particles.filter((p) => p.side === "left");
-      const rightParticles = particles.filter((p) => p.side === "right");
-
-      if (leftParticles.length > 0) {
-        const leftCOM = calculateCenterOfMass(leftParticles);
-        ctx.strokeStyle = "#3b82f6";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(leftCOM.x, leftCOM.y, 8, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(leftCOM.x - 10, leftCOM.y);
-        ctx.lineTo(leftCOM.x + 10, leftCOM.y);
-        ctx.moveTo(leftCOM.x, leftCOM.y - 10);
-        ctx.lineTo(leftCOM.x, leftCOM.y + 10);
-        ctx.stroke();
-      }
-
-      if (rightParticles.length > 0) {
-        const rightCOM = calculateCenterOfMass(rightParticles);
-        ctx.strokeStyle = "#ef4444";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(rightCOM.x, rightCOM.y, 8, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(rightCOM.x - 10, rightCOM.y);
-        ctx.lineTo(rightCOM.x + 10, rightCOM.y);
-        ctx.moveTo(rightCOM.x, rightCOM.y - 10);
-        ctx.lineTo(rightCOM.x, rightCOM.y + 10);
-        ctx.stroke();
-      }
-    }
-
     // Draw scale
     if (showScale) {
       ctx.fillStyle = "#ffffff";
@@ -199,7 +162,7 @@ const DiffusionCanvas = ({
     if (rightParticles.length > 0) {
       setRightTemp(Math.round(calculateTemperature(rightParticles)));
     }
-  }, [particles, hasDivider, showCenterOfMass, showScale]);
+  }, [particles, hasDivider, showScale]);
 
   const leftCount = particles.filter((p) => p.side === "left").length;
   const rightCount = particles.filter((p) => p.side === "right").length;
@@ -220,7 +183,7 @@ const DiffusionCanvas = ({
   return (
     <div className="flex flex-col items-center">
       {/* Data Display - Minimized with Divider */}
-      <div className="bg-gray-800/90 text-white rounded-lg p-3 mb-4 backdrop-blur-sm border border-gray-600/50 shadow-xl w-full max-w-[1000px]">
+      <div className="bg-gray-800/90 text-white rounded-lg p-3 mb-4 backdrop-blur-sm border border-gray-700 shadow-xl w-full max-w-[1000px]">
         <div className="flex">
           {/* Left Side Data */}
           <div className="flex-1 pr-4 border-r border-gray-500/50">
@@ -247,9 +210,7 @@ const DiffusionCanvas = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-blue-300">Left Chamber Temperature:</span>
-                <span className="font-mono text-blue-300">
-                  {leftTemp}k
-                </span>
+                <span className="font-mono text-blue-300">{leftTemp}k</span>
               </div>
             </div>
           </div>
@@ -278,10 +239,10 @@ const DiffusionCanvas = ({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-blue-300">Right Chamber Temperature:</span>
-                <span className="font-mono text-blue-300">
-                  {rightTemp}k
+                <span className="text-blue-300">
+                  Right Chamber Temperature:
                 </span>
+                <span className="font-mono text-blue-300">{rightTemp}k</span>
               </div>
             </div>
           </div>

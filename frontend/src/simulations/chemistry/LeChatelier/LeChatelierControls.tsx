@@ -37,8 +37,8 @@ const LeChatelierControls = ({
     <div className="space-y-6">
       {/* Reaction Selector */}
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
-          <FlaskConical className="w-4 h-4 text-purple-400" />
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-400">
+          <FlaskConical className="w-4 h-4 text-purple-600" />
           {t("Select Reaction")}
         </label>
 
@@ -49,7 +49,7 @@ const LeChatelierControls = ({
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/50 text-left transition-all ${
               isRunning
                 ? "opacity-60 cursor-not-allowed"
-                : "hover:bg-gray-700/50 hover:border-gray-600"
+                : "hover:bg-gray-700/80 hover:border-gray-600"
             }`}
           >
             <div>
@@ -80,7 +80,7 @@ const LeChatelierControls = ({
                   className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                     params.selectedReactionId === reaction.id
                       ? "bg-purple-500/20 text-purple-300"
-                      : "text-gray-300 hover:bg-gray-700"
+                      : "text-gray-400 hover:bg-gray-700 hover:text-white"
                   }`}
                 >
                   <div className="font-medium">{reaction.name}</div>
@@ -116,8 +116,8 @@ const LeChatelierControls = ({
       {/* Temperature Control */}
       <div className="space-y-3">
         <label className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm font-medium text-gray-300">
-            <Thermometer className="w-4 h-4 text-red-400" />
+          <span className="flex items-center gap-2 text-sm font-medium text-gray-400">
+            <Thermometer className="w-4 h-4 text-rose-600" />
             {t("Temperature")}
           </span>
           <span className="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded">
@@ -142,11 +142,11 @@ const LeChatelierControls = ({
               #4B5563 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-400">
           <span>200 K ({t("Cold")})</span>
           <span>600 K ({t("Hot")})</span>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-400">
           {selectedReaction.enthalpy < 0
             ? t("Temperature Shift Left")
             : t("Temperature Shift Right")}
@@ -156,8 +156,8 @@ const LeChatelierControls = ({
       {/* Pressure Control */}
       <div className="space-y-3">
         <label className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm font-medium text-gray-300">
-            <Gauge className="w-4 h-4 text-yellow-400" />
+          <span className="flex items-center gap-2 text-sm font-medium text-gray-400">
+            <Gauge className="w-4 h-4 text-amber-600" />
             {t("Pressure")}
           </span>
           <span className="text-sm font-bold text-white bg-gray-800 px-2 py-1 rounded">
@@ -180,11 +180,11 @@ const LeChatelierControls = ({
               #4B5563 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-400">
           <span>{t("Low")} (0.5 atm)</span>
           <span>{t("High")} (3.0 atm)</span>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-400">
           {(() => {
             const rGas = selectedReaction.reactants.reduce(
               (acc, r) => acc + (r.state === "g" ? r.coefficient : 0),
@@ -205,8 +205,8 @@ const LeChatelierControls = ({
 
       {/* Concentration Controls */}
       <div className="space-y-4">
-        <h3 className="flex items-center gap-2 text-sm font-medium text-gray-300">
-          <Beaker className="w-4 h-4 text-green-400" />
+        <h3 className="flex items-center gap-2 text-sm font-medium text-gray-400">
+          <Beaker className="w-4 h-4 text-emerald-600" />
           {t("Initial Concentrations")}
         </h3>
 
@@ -321,7 +321,7 @@ const LeChatelierControls = ({
         </button>
         <button
           onClick={onReset}
-          className="px-4 py-3 rounded-xl font-semibold text-sm bg-gray-700/50 text-gray-300 hover:bg-gray-600/50 hover:text-white transition-all border border-gray-600/50"
+          className="px-4 py-3 rounded-xl font-semibold text-sm bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 hover:text-white transition-all border border-gray-700/50"
         >
           <RotateCcw className="w-4 h-4" />
         </button>

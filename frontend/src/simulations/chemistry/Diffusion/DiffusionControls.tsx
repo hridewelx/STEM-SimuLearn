@@ -7,18 +7,16 @@ interface DiffusionControlsProps {
   isRunning: boolean;
   speed: "normal" | "slow";
   hasDivider: boolean;
-  showCenterOfMass: boolean;
-  showParticleFlow: boolean;
+
   showScale: boolean;
-  showStopwatch: boolean;
+
   onParamsChange: (params: Partial<DiffusionParams>) => void;
   onToggleRunning: () => void;
   onToggleSpeed: () => void;
   onToggleDivider: () => void;
-  onToggleCenterOfMass: () => void;
-  onToggleParticleFlow: () => void;
+
   onToggleScale: () => void;
-  onToggleStopwatch: () => void;
+
   onReset: () => void;
 }
 
@@ -27,24 +25,22 @@ const DiffusionControls = ({
   isRunning,
   speed,
   hasDivider,
-  showCenterOfMass,
-  showParticleFlow,
+
   showScale,
-  showStopwatch,
+
   onParamsChange,
   onToggleRunning,
   onToggleSpeed,
   onToggleDivider,
-  onToggleCenterOfMass,
-  onToggleParticleFlow,
+
   onToggleScale,
-  onToggleStopwatch,
+
   onReset,
 }: DiffusionControlsProps) => {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-gray-800 text-white rounded-2xl p-6 shadow-2xl">
+    <div className="bg-gray-800 text-white rounded-2xl p-6 shadow-2xl border border-gray-700">
       {/* Number of Particles */}
       <div className="mb-6">
         <h3 className="font-bold text-lg mb-4">
@@ -222,49 +218,11 @@ const DiffusionControls = ({
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
-            checked={showCenterOfMass}
-            onChange={onToggleCenterOfMass}
-            className="checkbox checkbox-sm"
-          />
-          <span>{t("diffusion.controls.center_of_mass")}</span>
-          <div className="ml-auto flex gap-1">
-            <div className="w-3 h-3 border border-blue-500 rounded"></div>
-            <div className="w-3 h-3 border border-red-500 rounded"></div>
-          </div>
-        </label>
-
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showParticleFlow}
-            onChange={onToggleParticleFlow}
-            className="checkbox checkbox-sm"
-          />
-          <span>{t("diffusion.controls.flow_rate")}</span>
-          <div className="ml-auto flex gap-1">
-            <div className="w-3 h-1 bg-blue-500"></div>
-            <div className="w-3 h-1 bg-blue-500"></div>
-          </div>
-        </label>
-
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
             checked={showScale}
             onChange={onToggleScale}
             className="checkbox checkbox-sm"
           />
           <span>{t("diffusion.controls.scale")}</span>
-        </label>
-
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showStopwatch}
-            onChange={onToggleStopwatch}
-            className="checkbox checkbox-sm"
-          />
-          <span>{t("diffusion.controls.stopwatch")}</span>
         </label>
       </div>
 

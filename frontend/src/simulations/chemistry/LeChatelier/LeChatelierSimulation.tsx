@@ -168,7 +168,7 @@ const LeChatelierSimulation = () => {
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
             mobilePanel === "controls"
               ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800"
+              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-700 hover:text-white"
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -181,7 +181,7 @@ const LeChatelierSimulation = () => {
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
             mobilePanel === "analytics"
               ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"
-              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800"
+              : "bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-700 hover:text-white"
           }`}
         >
           <BarChart3 className="w-4 h-4" />
@@ -238,7 +238,7 @@ const LeChatelierSimulation = () => {
 
         {/* Center - Simulation Canvas */}
         <div className={`${isFullscreen ? "col-span-1" : ""}`}>
-          <div className="bg-gradient-to-br from-gray-800/70 via-gray-800/60 to-gray-900/70 backdrop-blur-md rounded-2xl border border-gray-700/60 shadow-2xl overflow-hidden">
+          <div className="bg-gradient-to-br from-gray-800/70 via-gray-800/60 to-gray-900/70 backdrop-blur-md rounded-2xl border border-gray-700/60 shadow-2xl overflow-y-auto custom-scrollbar">
             {/* Canvas Header */}
             <div className="px-4 py-3 border-b border-gray-700/50 bg-gradient-to-r from-purple-500/15 via-purple-500/10 to-pink-500/15">
               <div className="flex items-center justify-between">
@@ -327,7 +327,7 @@ const LeChatelierSimulation = () => {
             <div
               className={`${
                 isFullscreen
-                  ? "h-[calc(100vh-160px)] w-full flex items-center justify-center p-4"
+                  ? "min-h-[calc(100vh-160px)] h-auto w-full flex items-start justify-center p-4 overflow-y-auto"
                   : "h-auto min-h-[450px] lg:min-h-[520px] p-2"
               }`}
             >

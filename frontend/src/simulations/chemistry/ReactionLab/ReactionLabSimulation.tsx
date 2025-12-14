@@ -91,7 +91,7 @@ const ReactionLabSimulation = () => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 ${
                 viewMode === 'visual'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <FlaskConical className="w-4 h-4" />
@@ -106,7 +106,7 @@ const ReactionLabSimulation = () => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 ${
                 viewMode === 'molecular'
                   ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <Atom className="w-4 h-4" />
@@ -135,7 +135,7 @@ const ReactionLabSimulation = () => {
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
             mobilePanel === 'controls'
               ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800'
+              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-700 hover:text-white'
           }`}
         >
           <Settings className="w-4 h-4" />
@@ -146,7 +146,7 @@ const ReactionLabSimulation = () => {
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
             mobilePanel === 'analytics'
               ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-800'
+              : 'bg-gray-800/80 text-gray-400 border border-gray-700/50 hover:bg-gray-700 hover:text-white'
           }`}
         >
           <BarChart3 className="w-4 h-4" />

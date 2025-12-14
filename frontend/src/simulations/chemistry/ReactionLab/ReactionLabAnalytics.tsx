@@ -10,7 +10,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-6 h-6 text-green-400" />
+        <Activity className="w-6 h-6 text-emerald-600" />
         <h2 className="text-xl font-bold text-white">Reaction Analytics</h2>
       </div>
 
@@ -24,7 +24,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-gray-400">Reaction Progress</span>
-          <span className="text-sm font-bold text-cyan-400">
+          <span className="text-sm font-bold text-cyan-600">
             {analytics.progressPercentage.toFixed(1)}%
           </span>
         </div>
@@ -47,36 +47,36 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
         {/* Reaction Rate */}
         <div className="bg-gray-800 rounded-xl p-3 border border-gray-700">
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-green-400" />
+            <TrendingUp className="w-4 h-4 text-emerald-600" />
             <span className="text-xs text-gray-400">Reaction Rate</span>
           </div>
           <p className="text-xl font-bold text-green-300">
             {analytics.reactionRate.toFixed(2)}
-            <span className="text-xs text-gray-500"> /s</span>
+            <span className="text-xs text-gray-400"> /s</span>
           </p>
         </div>
 
         {/* Products Formed */}
         <div className="bg-gray-800 rounded-xl p-3 border border-gray-700">
           <div className="flex items-center gap-2 mb-1">
-            <FlaskConical className="w-4 h-4 text-purple-400" />
+            <FlaskConical className="w-4 h-4 text-purple-600" />
             <span className="text-xs text-gray-400">Products Formed</span>
           </div>
           <p className="text-xl font-bold text-purple-300">
             {analytics.productsFormed}
-            <span className="text-xs text-gray-500"> g</span>
+            <span className="text-xs text-gray-400"> g</span>
           </p>
         </div>
 
         {/* Total Particles */}
         <div className="bg-gray-800 rounded-xl p-3 border border-gray-700">
           <div className="flex items-center gap-2 mb-1">
-            <Activity className="w-4 h-4 text-cyan-400" />
+            <Activity className="w-4 h-4 text-cyan-600" />
             <span className="text-xs text-gray-400">Total Mass Input</span>
           </div>
           <p className="text-xl font-bold text-cyan-300">
             {analytics.totalParticles}
-            <span className="text-xs text-gray-500"> g</span>
+            <span className="text-xs text-gray-400"> g</span>
           </p>
         </div>
 
@@ -84,9 +84,9 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
         <div className="bg-gray-800 rounded-xl p-3 border border-gray-700">
           <div className="flex items-center gap-2 mb-1">
             {analytics.energyChange === 'exothermic' ? (
-              <Flame className="w-4 h-4 text-orange-400" />
+              <Flame className="w-4 h-4 text-orange-600" />
             ) : analytics.energyChange === 'endothermic' ? (
-              <Snowflake className="w-4 h-4 text-blue-400" />
+              <Snowflake className="w-4 h-4 text-blue-600" />
             ) : (
               <Zap className="w-4 h-4 text-gray-400" />
             )}
@@ -99,7 +99,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
           }`}>
             {analytics.energyChange || 'N/A'}
           </p>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-gray-400 mt-0.5">
             {analytics.energyChange === 'exothermic' ? 'Releases heat' : 
              analytics.energyChange === 'endothermic' ? 'Absorbs heat' : ''}
           </p>
@@ -109,11 +109,11 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
       {/* Stoichiometric Ratio */}
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex items-center gap-2 mb-2">
-          <Scale className="w-4 h-4 text-yellow-400" />
+          <Scale className="w-4 h-4 text-amber-600" />
           <h3 className="text-xs font-semibold text-gray-400">Stoichiometric Ratio</h3>
         </div>
         <p className="text-2xl font-mono font-bold text-yellow-300">{analytics.stoichiometricRatio}</p>
-        <p className="text-xs text-gray-500 mt-1">Reactants : Products</p>
+        <p className="text-xs text-gray-400 mt-1">Reactants : Products</p>
       </div>
 
       {/* Limiting Reagent Info */}
@@ -127,7 +127,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
           {analytics.excessReagent && (
             <div className="mt-2 pt-2 border-t border-amber-800/50">
               <p className="text-xs text-gray-400">
-                Excess: <span className="text-green-400 font-medium">{analytics.excessReagent}</span>
+                Excess: <span className="text-emerald-600 font-medium">{analytics.excessReagent}</span>
               </p>
             </div>
           )}
@@ -143,13 +143,13 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
         
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500">Theoretical Yield</span>
-            <span className="text-sm font-mono text-gray-300">
+            <span className="text-xs text-gray-400">Theoretical Yield</span>
+            <span className="text-sm font-mono text-gray-400">
               {analytics.theoreticalYield.toFixed(2)} g
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500">Actual Yield</span>
+            <span className="text-xs text-gray-400">Actual Yield</span>
             <span className="text-sm font-mono text-emerald-300">
               {analytics.actualYield.toFixed(2)} g
             </span>
@@ -167,7 +167,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
 
       {/* Educational Tips */}
       <div className="bg-blue-900/20 rounded-xl p-4 border border-blue-800">
-        <h3 className="text-xs font-semibold text-blue-400 mb-2">💡 Chemistry Tips</h3>
+        <h3 className="text-xs font-semibold text-blue-600 mb-2">💡 Chemistry Tips</h3>
         <ul className="text-xs text-gray-400 space-y-1">
           <li>• The limiting reagent determines max product yield</li>
           <li>• Higher temperature = faster reaction rate</li>

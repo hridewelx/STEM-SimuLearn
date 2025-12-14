@@ -521,7 +521,7 @@ const ReactionLabCanvas = ({ params, isRunning, onAnalyticsUpdate }: ReactionLab
       />
       
       {/* Legend - positioned at bottom of canvas */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-wrap gap-3 justify-center bg-gray-900/70 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-gray-700/50">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-wrap gap-3 justify-center bg-gray-800/70 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-gray-700">
         {(() => {
           const [r1, r2] = getReactants();
           const reaction = getReactionData();
@@ -541,7 +541,7 @@ const ReactionLabCanvas = ({ params, isRunning, onAnalyticsUpdate }: ReactionLab
                 className="w-3 h-3 rounded-full shadow-sm"
                 style={{ backgroundColor: item.color, boxShadow: `0 0 6px ${item.color}40` }}
               />
-              <span className="text-xs text-gray-300">{item.label}</span>
+              <span className="text-xs text-gray-400">{item.label}</span>
             </div>
           ));
         })()}

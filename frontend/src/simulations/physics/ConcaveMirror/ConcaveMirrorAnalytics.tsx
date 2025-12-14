@@ -26,7 +26,7 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-5 h-5 text-green-400" />
+        <Activity className="w-5 h-5 text-emerald-600" />
         <h3 className="text-xl font-bold text-white">Image Analytics</h3>
       </div>
 
@@ -35,13 +35,13 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         {/* Image Distance */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <Ruler className="w-4 h-4 text-blue-400" />
+            <Ruler className="w-4 h-4 text-blue-600" />
             <span className="text-xs text-gray-400">Image Distance (v)</span>
           </div>
           <p className="text-2xl font-bold text-white">
             {isAtInfinity ? '∞' : `${Math.abs(v).toFixed(1)} cm`}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {isAtInfinity ? 'At infinity' : isReal ? 'In front of mirror' : 'Behind mirror'}
           </p>
         </div>
@@ -49,13 +49,13 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         {/* Magnification */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <Maximize2 className="w-4 h-4 text-purple-400" />
+            <Maximize2 className="w-4 h-4 text-purple-600" />
             <span className="text-xs text-gray-400">Magnification (m)</span>
           </div>
           <p className="text-2xl font-bold text-white">
             {isAtInfinity ? '∞' : `${magnification.toFixed(2)}×`}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {Math.abs(magnification) > 1 ? 'Enlarged' : Math.abs(magnification) === 1 ? 'Same size' : 'Diminished'}
           </p>
         </div>
@@ -63,13 +63,13 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         {/* Image Type */}
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="flex items-center gap-2 mb-2">
-            <ImageIcon className="w-4 h-4 text-green-400" />
+            <ImageIcon className="w-4 h-4 text-emerald-600" />
             <span className="text-xs text-gray-400">Image Type</span>
           </div>
           <p className="text-2xl font-bold text-white">
             {isAtInfinity ? 'No Image' : isReal ? 'Real' : 'Virtual'}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {isAtInfinity ? 'Formed at infinity' : isReal ? 'Can be projected' : 'Cannot be projected'}
           </p>
         </div>
@@ -83,7 +83,7 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
           <p className="text-2xl font-bold text-white">
             {isAtInfinity ? '-' : isInverted ? 'Inverted' : 'Erect'}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {isAtInfinity ? 'Not applicable' : isInverted ? 'Upside down' : 'Upright'}
           </p>
         </div>
@@ -98,11 +98,11 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
         
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="text-center space-y-2">
-            <p className="text-lg font-mono text-blue-400">1/f = 1/v + 1/u</p>
+            <p className="text-lg font-mono text-blue-600">1/f = 1/v + 1/u</p>
             <p className="text-sm text-gray-400">
               f = {f.toFixed(1)} cm, u = {u.toFixed(1)} cm
             </p>
-            <p className="text-sm text-green-400">
+            <p className="text-sm text-emerald-600">
               v = {isAtInfinity ? '∞' : `${v.toFixed(1)} cm`}
             </p>
           </div>
@@ -110,11 +110,11 @@ const ConcaveMirrorAnalytics: React.FC<ConcaveMirrorAnalyticsProps> = ({ params 
 
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <div className="text-center space-y-2">
-            <p className="text-lg font-mono text-purple-400">m = -v/u = h'/h</p>
+            <p className="text-lg font-mono text-purple-600">m = -v/u = h'/h</p>
             <p className="text-sm text-gray-400">
               Image height (h') = {isAtInfinity ? '∞' : `${imageHeight.toFixed(1)} cm`}
             </p>
-            <p className="text-sm text-green-400">
+            <p className="text-sm text-emerald-600">
               m = {isAtInfinity ? '∞' : magnification.toFixed(2)}
             </p>
           </div>

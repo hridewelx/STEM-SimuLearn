@@ -1,22 +1,19 @@
-import { useState } from 'react';
-import DiffusionCanvas from './DiffusionCanvas';
-import DiffusionControls from './DiffusionControls';
-import AITutorPanel from '../../../components/AITutorPanel';
-import { DiffusionParams } from '../../types/simulationTypes';
-import { defaultDiffusionParams, diffusionConfig } from './config';
+import { useState } from "react";
+import DiffusionCanvas from "./DiffusionCanvas";
+import DiffusionControls from "./DiffusionControls";
+import AITutorPanel from "../../../components/AITutorPanel";
+import { DiffusionParams } from "../../types/simulationTypes";
+import { defaultDiffusionParams, diffusionConfig } from "./config";
 
 const DiffusionSimulation = () => {
   const [params, setParams] = useState<DiffusionParams>(defaultDiffusionParams);
   const [isRunning, setIsRunning] = useState(false);
-  const [speed, setSpeed] = useState<'normal' | 'slow'>('normal');
+  const [speed, setSpeed] = useState<"normal" | "slow">("normal");
   const [hasDivider, setHasDivider] = useState(true);
-  const [showCenterOfMass, setShowCenterOfMass] = useState(false);
-  const [showParticleFlow, setShowParticleFlow] = useState(false);
-  const [showScale, setShowScale] = useState(false);
-  const [showStopwatch, setShowStopwatch] = useState(false);
+  const [showScale, setShowScale] = useState(true);
 
   const handleParamsChange = (newParams: Partial<DiffusionParams>) => {
-    setParams(prev => ({ ...prev, ...newParams }));
+    setParams((prev) => ({ ...prev, ...newParams }));
   };
 
   const handleReset = () => {
@@ -34,14 +31,13 @@ const DiffusionSimulation = () => {
       isRunning,
       speed,
       hasDivider,
-      showCenterOfMass,
-      showScale
+      showScale,
     },
     metadata: {
       name: diffusionConfig.name,
       objectives: diffusionConfig.objectives,
-      tags: diffusionConfig.tags
-    }
+      tags: diffusionConfig.tags,
+    },
   };
 
   return (
@@ -54,7 +50,6 @@ const DiffusionSimulation = () => {
             isRunning={isRunning}
             speed={speed}
             hasDivider={hasDivider}
-            showCenterOfMass={showCenterOfMass}
             showScale={showScale}
             onReset={handleReset}
           />
@@ -67,18 +62,14 @@ const DiffusionSimulation = () => {
             isRunning={isRunning}
             speed={speed}
             hasDivider={hasDivider}
-            showCenterOfMass={showCenterOfMass}
-            showParticleFlow={showParticleFlow}
             showScale={showScale}
-            showStopwatch={showStopwatch}
             onParamsChange={handleParamsChange}
             onToggleRunning={() => setIsRunning(!isRunning)}
-            onToggleSpeed={() => setSpeed(speed === 'normal' ? 'slow' : 'normal')}
+            onToggleSpeed={() =>
+              setSpeed(speed === "normal" ? "slow" : "normal")
+            }
             onToggleDivider={() => setHasDivider(!hasDivider)}
-            onToggleCenterOfMass={() => setShowCenterOfMass(!showCenterOfMass)}
-            onToggleParticleFlow={() => setShowParticleFlow(!showParticleFlow)}
             onToggleScale={() => setShowScale(!showScale)}
-            onToggleStopwatch={() => setShowStopwatch(!showStopwatch)}
             onReset={handleReset}
           />
         </div>

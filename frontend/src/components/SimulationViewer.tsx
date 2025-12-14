@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Target, Award, Play, Zap, Book } from 'lucide-react';
-import { SimulationConfig } from '../simulations/types';
+import { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Clock, Target, Award, Play, Zap, Book } from "lucide-react";
+import { SimulationConfig } from "../simulations/types/simulationTypes";
 
 interface SimulationViewerProps {
   config: SimulationConfig;
@@ -10,34 +10,41 @@ interface SimulationViewerProps {
 
 const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
   const categoryColors = {
-    physics: { badge: 'badge-info', gradient: 'from-blue-500 to-cyan-500' },
-    chemistry: { badge: 'badge-secondary', gradient: 'from-purple-500 to-pink-500' },
-    biology: { badge: 'badge-accent', gradient: 'from-green-500 to-emerald-500' },
-    math: { badge: 'badge-warning', gradient: 'from-orange-500 to-yellow-500' }
+    physics: { badge: "badge-info", gradient: "from-blue-500 to-cyan-500" },
+    chemistry: {
+      badge: "badge-secondary",
+      gradient: "from-purple-500 to-pink-500",
+    },
+    biology: {
+      badge: "badge-accent",
+      gradient: "from-green-500 to-emerald-500",
+    },
+    math: { badge: "badge-warning", gradient: "from-orange-500 to-yellow-500" },
   };
 
   const colors = categoryColors[config.category as keyof typeof categoryColors];
 
   // Simulation-specific descriptions (you could move this to config)
   const simulationDetails = {
-    'diffusion-1': {
+    "diffusion-1": {
       howItWorks: `This simulation models gas diffusion through a semi-permeable membrane. Particles move randomly based on kinetic theory, with their speed determined by temperature and mass. Heavier particles (like Nitrogen) move slower than lighter ones (like Helium) at the same temperature. Over time, you'll observe particles moving from high concentration to low concentration until equilibrium is reached.`,
       keyConcepts: [
-        'Particles move randomly and collide elastically',
-        'Temperature determines average kinetic energy',
-        'Lighter particles diffuse faster than heavier ones',
-        'Diffusion continues until concentration equalizes'
+        "Particles move randomly and collide elastically",
+        "Temperature determines average kinetic energy",
+        "Lighter particles diffuse faster than heavier ones",
+        "Diffusion continues until concentration equalizes",
       ],
       controls: [
-        'Adjust temperature sliders to change particle speed',
-        'Modify particle counts to change concentrations',
-        'Change molecular masses to compare diffusion rates',
-        'Observe how different parameters affect equilibrium time'
-      ]
-    }
+        "Adjust temperature sliders to change particle speed",
+        "Modify particle counts to change concentrations",
+        "Change molecular masses to compare diffusion rates",
+        "Observe how different parameters affect equilibrium time",
+      ],
+    },
   };
 
-  const details = simulationDetails[config.id as keyof typeof simulationDetails];
+  const details =
+    simulationDetails[config.id as keyof typeof simulationDetails];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -46,16 +53,25 @@ const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link to={`/simulations/${config.category}`} className="btn btn-ghost btn-sm gap-2 text-white">
+              <Link
+                to={`/simulations/${config.category}`}
+                className="btn btn-ghost btn-sm gap-2 text-white"
+              >
                 <ArrowLeft className="w-4 h-4" />
-                Back to {config.category.charAt(0).toUpperCase() + config.category.slice(1)}
+                Back to{" "}
+                {config.category.charAt(0).toUpperCase() +
+                  config.category.slice(1)}
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                   <config.icon className="w-6 h-6" />
                   {config.name}
                 </h1>
-                <p className="text-sm text-gray-400">{config.category.charAt(0).toUpperCase() + config.category.slice(1)} Simulation</p>
+                <p className="text-sm text-gray-400">
+                  {config.category.charAt(0).toUpperCase() +
+                    config.category.slice(1)}{" "}
+                  Simulation
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -81,19 +97,26 @@ const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
               <Zap className="w-6 h-6 text-yellow-400" />
               How This Simulation Works
             </h2>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Description */}
               <div className="lg:col-span-2">
-                <h3 className="font-semibold text-white mb-3 text-lg">Simulation Overview</h3>
+                <h3 className="font-semibold text-white mb-3 text-lg">
+                  Simulation Overview
+                </h3>
                 <p className="text-gray-300 leading-relaxed mb-6">
                   {details.howItWorks}
                 </p>
-                
-                <h3 className="font-semibold text-white mb-3 text-lg">Key Concepts Demonstrated</h3>
+
+                <h3 className="font-semibold text-white mb-3 text-lg">
+                  Key Concepts Demonstrated
+                </h3>
                 <ul className="space-y-2">
-                {details.keyConcepts.map((concept: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2 text-gray-300">
+                  {details.keyConcepts.map((concept: string, index: number) => (
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-gray-300"
+                    >
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
                       {concept}
                     </li>
@@ -109,7 +132,10 @@ const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
                 </h3>
                 <ul className="space-y-3">
                   {details.controls.map((control: string, index: number) => (
-                    <li key={index} className="text-gray-300 text-sm flex items-start gap-2">
+                    <li
+                      key={index}
+                      className="text-gray-300 text-sm flex items-start gap-2"
+                    >
                       <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-1.5 flex-shrink-0" />
                       {control}
                     </li>
@@ -122,7 +148,8 @@ const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
                     Pro Tip
                   </h4>
                   <p className="text-blue-200 text-sm">
-                    Try starting with extreme values (very high vs very low temperature) to see dramatic differences in diffusion rates.
+                    Try starting with extreme values (very high vs very low
+                    temperature) to see dramatic differences in diffusion rates.
                   </p>
                 </div>
               </div>
@@ -132,40 +159,52 @@ const SimulationViewer = ({ config, children }: SimulationViewerProps) => {
 
         {/* About Section */}
         <div className="mt-8 bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-6">About This Simulation</h2>
-          
+          <h2 className="text-2xl font-bold text-white mb-6">
+            About This Simulation
+          </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="flex items-start gap-3">
               <Clock className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-white mb-1">Duration</h3>
-                <p className="text-gray-400 text-sm">Approximately {config.duration} minutes</p>
+                <p className="text-gray-400 text-sm">
+                  Approximately {config.duration} minutes
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Target className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-white mb-1">Objectives</h3>
-                <p className="text-gray-400 text-sm">{config.objectives.length} learning objectives</p>
+                <p className="text-gray-400 text-sm">
+                  {config.objectives.length} learning objectives
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Award className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-white mb-1">Difficulty</h3>
-                <p className="text-gray-400 text-sm capitalize">{config.difficulty} level</p>
+                <p className="text-gray-400 text-sm capitalize">
+                  {config.difficulty} level
+                </p>
               </div>
             </div>
           </div>
 
           <div className="text-gray-300 space-y-4">
             <p className="leading-relaxed">{config.longDescription}</p>
-            
+
             <div>
-              <h3 className="font-bold text-white mb-3">Learning Objectives:</h3>
+              <h3 className="font-bold text-white mb-3">
+                Learning Objectives:
+              </h3>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 {config.objectives.map((objective: string, index: number) => (
-                  <li key={index} className="text-gray-300">{objective}</li>
+                  <li key={index} className="text-gray-300">
+                    {objective}
+                  </li>
                 ))}
               </ul>
             </div>

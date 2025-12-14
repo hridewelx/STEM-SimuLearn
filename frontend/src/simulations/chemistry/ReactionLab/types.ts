@@ -1,14 +1,26 @@
 // Types for the Advanced Chemistry Reaction Simulator
 
 // Reaction types matching ChemicalReactions pattern
-export type ReactionType = 'composition' | 'decomposition' | 'acidBase' | 'singleReplacement';
+export type ReactionType =
+  | "composition"
+  | "decomposition"
+  | "acidBase"
+  | "singleReplacement";
 
 // Chemical element for selection
 export interface ChemicalElement {
   symbol: string;
   name: string;
   color: string;
-  category: 'metal' | 'nonmetal' | 'acid' | 'base' | 'salt' | 'water' | 'gas' | 'compound';
+  category:
+    | "metal"
+    | "nonmetal"
+    | "acid"
+    | "base"
+    | "salt"
+    | "water"
+    | "gas"
+    | "compound";
   reactivity?: number;
   molarMass: number;
 }
@@ -38,8 +50,11 @@ export interface ReactionRule {
     reactants: number[];
     products: number[];
   };
-  energyChange: 'exothermic' | 'endothermic' | 'neutral';
+  energyChange: "exothermic" | "endothermic" | "neutral";
   warning?: string;
+  explanation?: string;
+  conditions?: string;
+  howToPerform?: string;
 }
 
 // Simulation parameters
@@ -72,9 +87,12 @@ export interface ReactionResult {
     reactants: number[];
     products: number[];
   };
-  energyChange: 'exothermic' | 'endothermic' | 'neutral';
+  energyChange: "exothermic" | "endothermic" | "neutral";
   warning?: string;
   errorMessage?: string;
+  explanation?: string;
+  conditions?: string;
+  howToPerform?: string;
   stoichiometricRatio: string;
 }
 

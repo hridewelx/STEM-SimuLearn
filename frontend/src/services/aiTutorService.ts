@@ -20,7 +20,6 @@ export interface SimulationData {
 class AITutorService {
   private isSpeaking = false;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private currentUtterance: SpeechSynthesisUtterance | null = null;
 
   async sendMessage(
     messages: AIMessage[],
@@ -76,7 +75,7 @@ class AITutorService {
     return new Promise((resolve) => {
       // Check if speech synthesis is available
       if (!this.isSpeechSupported()) {
-        console.warn('❌ Speech synthesis not supported');
+        console.warn("❌ Speech synthesis not supported");
         resolve([]);
         return;
       }
@@ -84,7 +83,7 @@ class AITutorService {
       // Get voices immediately
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
-        console.log('🗣️ Voices available immediately:', voices.length);
+        console.log("🗣️ Voices available immediately:", voices.length);
         resolve(voices);
         return;
       }
@@ -92,7 +91,7 @@ class AITutorService {
       // Set up voiceschanged event with timeout
       const voicesChangedHandler = () => {
         const loadedVoices = window.speechSynthesis.getVoices();
-        console.log('🗣️ Voices loaded via event:', loadedVoices.length);
+        console.log("🗣️ Voices loaded via event:", loadedVoices.length);
         window.speechSynthesis.onvoiceschanged = null;
         resolve(loadedVoices);
       };
@@ -103,7 +102,7 @@ class AITutorService {
       setTimeout(() => {
         const timeoutVoices = window.speechSynthesis.getVoices();
         if (timeoutVoices.length > 0) {
-          console.log('⏰ Voices loaded via timeout:', timeoutVoices.length);
+          console.log("⏰ Voices loaded via timeout:", timeoutVoices.length);
           window.speechSynthesis.onvoiceschanged = null;
           resolve(timeoutVoices);
         } else {
@@ -118,52 +117,60 @@ class AITutorService {
     return new Promise((resolve) => {
       try {
         // Create a silent utterance to trigger voice loading
-        const utterance = new SpeechSynthesisUtterance('');
+        const utterance = new SpeechSynthesisUtterance("");
         utterance.volume = 0;
         utterance.onend = () => {
           const voices = window.speechSynthesis.getVoices();
-          console.log('🔇 Silent utterance completed, voices:', voices.length);
+          console.log("🔇 Silent utterance completed, voices:", voices.length);
           resolve(voices);
         };
         utterance.onerror = () => {
           const voices = window.speechSynthesis.getVoices();
-          console.log('❌ Silent utterance failed, voices:', voices.length);
+          console.log("❌ Silent utterance failed, voices:", voices.length);
           resolve(voices);
         };
-        
+
         window.speechSynthesis.speak(utterance);
         // Cancel immediately - we just want to trigger loading
         setTimeout(() => {
           window.speechSynthesis.cancel();
         }, 10);
       } catch (error) {
-        console.error('Error triggering voice load:', error);
+        console.error("Error triggering voice load:", error);
         resolve(window.speechSynthesis.getVoices());
       }
     });
   }
 
   private isSpeechSupported(): boolean {
-    return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+    return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
   }
 
   // Get the best available voice for the current browser
-  private getBestVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  private getBestVoice(
+    voices: SpeechSynthesisVoice[]
+  ): SpeechSynthesisVoice | null {
     if (voices.length === 0) return null;
 
     // Priority order for voice selection
     const voicePreferences = [
-      (v: SpeechSynthesisVoice) => v.lang.startsWith('en') && v.localService === false, // Cloud voices
-      (v: SpeechSynthesisVoice) => v.lang.startsWith('en-US'),
-      (v: SpeechSynthesisVoice) => v.lang.startsWith('en-GB'),
-      (v: SpeechSynthesisVoice) => v.lang.startsWith('en'),
+      (v: SpeechSynthesisVoice) =>
+        v.lang.startsWith("en") && v.localService === false, // Cloud voices
+      (v: SpeechSynthesisVoice) => v.lang.startsWith("en-US"),
+      (v: SpeechSynthesisVoice) => v.lang.startsWith("en-GB"),
+      (v: SpeechSynthesisVoice) => v.lang.startsWith("en"),
       (v: SpeechSynthesisVoice) => v.default,
     ];
 
     for (const preference of voicePreferences) {
       const voice = voices.find(preference);
       if (voice) {
-        console.log('🎯 Selected voice:', voice.name, voice.lang, voice.localService);
+        console.log(
+          "🎯 Selected voice:",
+          voice.name,
+          voice.lang,
+          voice.localService
+        );
         return voice;
       }
     }
@@ -174,7 +181,7 @@ class AITutorService {
   // Text-to-Speech with enhanced browser compatibility
   async speak(text: string, onEnd?: () => void): Promise<void> {
     if (!this.isSpeechSupported()) {
-      console.warn('Speech synthesis not supported in this browser');
+      console.warn("Speech synthesis not supported in this browser");
       if (onEnd) onEnd();
       return;
     }
@@ -184,7 +191,7 @@ class AITutorService {
 
     const voices = await this.initializeVoices();
     if (voices.length === 0) {
-      console.warn('No voices available in this browser');
+      console.warn("No voices available in this browser");
       if (onEnd) onEnd();
       return;
     }
@@ -198,7 +205,6 @@ class AITutorService {
     return new Promise((resolve) => {
       try {
         const utterance = new SpeechSynthesisUtterance(cleanText);
-        this.currentUtterance = utterance;
 
         // Configure utterance for better compatibility
         const voice = this.getBestVoice(voices);
@@ -212,26 +218,27 @@ class AITutorService {
         utterance.volume = 1.0;
 
         utterance.onstart = () => {
-          console.log('🎙️ Speech started');
+          console.log("🎙️ Speech started");
           this.isSpeaking = true;
         };
 
         utterance.onend = () => {
-          console.log('✅ Speech completed');
+          console.log("✅ Speech completed");
           this.isSpeaking = false;
-          this.currentUtterance = null;
           if (onEnd) onEnd();
           resolve();
         };
 
         utterance.onerror = (event) => {
-          console.error('❌ Speech error:', event.error);
+          console.error("❌ Speech error:", event.error);
           this.isSpeaking = false;
-          this.currentUtterance = null;
-          
+
           // Try fallback without specific voice for problematic browsers
-          if (event.error === 'not-allowed' || event.error === 'synthesis-failed') {
-            console.log('🔄 Attempting fallback speech...');
+          if (
+            event.error === "not-allowed" ||
+            event.error === "synthesis-failed"
+          ) {
+            console.log("🔄 Attempting fallback speech...");
             this.fallbackSpeak(cleanText, onEnd).then(resolve);
           } else {
             if (onEnd) onEnd();
@@ -243,9 +250,8 @@ class AITutorService {
         setTimeout(() => {
           window.speechSynthesis.speak(utterance);
         }, 50);
-
       } catch (error) {
-        console.error('Error creating utterance:', error);
+        console.error("Error creating utterance:", error);
         if (onEnd) onEnd();
         resolve();
       }
@@ -257,7 +263,7 @@ class AITutorService {
     return new Promise((resolve) => {
       try {
         const utterance = new SpeechSynthesisUtterance(text);
-        
+
         // Minimal configuration for fallback
         utterance.rate = 0.9;
         utterance.volume = 1.0;
@@ -276,7 +282,7 @@ class AITutorService {
 
         window.speechSynthesis.speak(utterance);
       } catch (error) {
-        console.error('Fallback speech also failed:', error);
+        console.error("Fallback speech also failed:", error);
         this.isSpeaking = false;
         if (onEnd) onEnd();
         resolve();
@@ -286,14 +292,14 @@ class AITutorService {
 
   private cleanTextForSpeech(text: string): string {
     return text
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-      .replace(/\*(.*?)\*/g, '$1')     // Remove italic
-      .replace(/`(.*?)`/g, '$1')       // Remove code
-      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links
-      .replace(/#{1,6}\s?/g, '')       // Remove headers
-      .replace(/\n+/g, '. ')           // Convert newlines to pauses
-      .replace(/\s+/g, ' ')            // Normalize whitespace
-      .replace(/\s*([.,!?])\s*/g, '$1 ') // Proper punctuation spacing
+      .replace(/\*\*(.*?)\*\*/g, "$1") // Remove bold
+      .replace(/\*(.*?)\*/g, "$1") // Remove italic
+      .replace(/`(.*?)`/g, "$1") // Remove code
+      .replace(/\[(.*?)\]\(.*?\)/g, "$1") // Remove links
+      .replace(/#{1,6}\s?/g, "") // Remove headers
+      .replace(/\n+/g, ". ") // Convert newlines to pauses
+      .replace(/\s+/g, " ") // Normalize whitespace
+      .replace(/\s*([.,!?])\s*/g, "$1 ") // Proper punctuation spacing
       .trim();
   }
 
@@ -301,20 +307,19 @@ class AITutorService {
     if (this.isSpeechSupported()) {
       window.speechSynthesis.cancel();
       this.isSpeaking = false;
-      this.currentUtterance = null;
     }
   }
 
   // Enhanced speech support check
-  async checkSpeechSupport(): Promise<{ 
-    supported: boolean; 
+  async checkSpeechSupport(): Promise<{
+    supported: boolean;
     voicesAvailable: boolean;
     browser: string;
     mobile: boolean;
   }> {
     const supported = this.isSpeechSupported();
     let voicesAvailable = false;
-    
+
     if (supported) {
       const voices = await this.initializeVoices();
       voicesAvailable = voices.length > 0;
@@ -329,29 +334,31 @@ class AITutorService {
       supported,
       voicesAvailable,
       browser,
-      mobile
+      mobile,
     };
   }
 
   private detectBrowser(userAgent: string): string {
-    if (userAgent.includes('chrome')) return 'chrome';
-    if (userAgent.includes('firefox')) return 'firefox';
-    if (userAgent.includes('safari')) return 'safari';
-    if (userAgent.includes('edge')) return 'edge';
-    if (userAgent.includes('opera')) return 'opera';
-    if (userAgent.includes('brave')) return 'brave';
-    return 'unknown';
+    if (userAgent.includes("chrome")) return "chrome";
+    if (userAgent.includes("firefox")) return "firefox";
+    if (userAgent.includes("safari")) return "safari";
+    if (userAgent.includes("edge")) return "edge";
+    if (userAgent.includes("opera")) return "opera";
+    if (userAgent.includes("brave")) return "brave";
+    return "unknown";
   }
 
   private isMobileDevice(): boolean {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   }
 
   // Get current speech state
   getSpeechState() {
     return {
       isSpeaking: this.isSpeaking,
-      isSupported: this.isSpeechSupported()
+      isSupported: this.isSpeechSupported(),
     };
   }
 }

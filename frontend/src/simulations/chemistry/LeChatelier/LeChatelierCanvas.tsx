@@ -33,8 +33,8 @@ const LeChatelierCanvas = ({
   }>({ text: "", color: "", timestamp: 0 });
 
   // Dynamically adjust canvas size based on fullscreen state
-  const CANVAS_WIDTH = isFullscreen ? 1200 : 700;
-  const CANVAS_HEIGHT = isFullscreen ? 650 : 380;
+  const CANVAS_WIDTH = isFullscreen ? 1200 : 800;
+  const CANVAS_HEIGHT = isFullscreen ? 600 : 450;
 
   // Get selected reaction details
   const selectedReaction =
@@ -273,7 +273,13 @@ const LeChatelierCanvas = ({
         });
       }
     },
-    [params.temperature, REACTANT_COLOR, PRODUCT_COLOR, CANVAS_WIDTH, CANVAS_HEIGHT]
+    [
+      params.temperature,
+      REACTANT_COLOR,
+      PRODUCT_COLOR,
+      CANVAS_WIDTH,
+      CANVAS_HEIGHT,
+    ]
   );
 
   // Remove Particle
@@ -360,16 +366,18 @@ const LeChatelierCanvas = ({
         reactants.length > 5
       ) {
         particle.isTransitioning = true;
-        
+
         // Gradual transition: first to purple, then some stay purple
         particle.color = TRANSITION_COLOR;
-        
+
         // 30% stay purple longer (500ms), 70% transition normally (300ms)
         const transitionTime = Math.random() < 0.3 ? 500 : 300;
-        
+
         setTimeout(() => {
           // Check if particle still exists
-          const stillExists = particlesRef.current.find(p => p.id === particle.id);
+          const stillExists = particlesRef.current.find(
+            (p) => p.id === particle.id
+          );
           if (stillExists) {
             stillExists.type = "product";
             stillExists.color = PRODUCT_COLOR;
@@ -387,16 +395,18 @@ const LeChatelierCanvas = ({
         products.length > 5
       ) {
         particle.isTransitioning = true;
-        
+
         // Gradual transition: first to purple, then some stay purple
         particle.color = TRANSITION_COLOR;
-        
+
         // 30% stay purple longer (500ms), 70% transition normally (300ms)
         const transitionTime = Math.random() < 0.3 ? 500 : 300;
-        
+
         setTimeout(() => {
           // Check if particle still exists
-          const stillExists = particlesRef.current.find(p => p.id === particle.id);
+          const stillExists = particlesRef.current.find(
+            (p) => p.id === particle.id
+          );
           if (stillExists) {
             stillExists.type = "reactant";
             stillExists.color = REACTANT_COLOR;
@@ -626,7 +636,7 @@ const LeChatelierCanvas = ({
   }, [statusMessage.timestamp]);
 
   return (
-    <div className="w-full h-full flex flex-col items-stretch gap-3">
+    <div className="w-full h-auto flex flex-col items-stretch gap-3">
       {/* Controls Bar */}
       <div className="flex items-center justify-between w-full px-2 gap-4">
         <div className="flex items-center gap-2 bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2">
@@ -718,9 +728,7 @@ const LeChatelierCanvas = ({
             className="w-5 h-5 rounded-full border-2 border-white shadow-md"
             style={{ backgroundColor: REACTANT_COLOR }}
           />
-          <span className="text-sm font-semibold text-gray-200">
-            Reactants
-          </span>
+          <span className="text-sm font-semibold text-gray-200">Reactants</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -728,9 +736,7 @@ const LeChatelierCanvas = ({
             className="w-5 h-5 rounded-full border-2 border-white shadow-md"
             style={{ backgroundColor: PRODUCT_COLOR }}
           />
-          <span className="text-sm font-semibold text-gray-200">
-            Products
-          </span>
+          <span className="text-sm font-semibold text-gray-200">Products</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -738,7 +744,7 @@ const LeChatelierCanvas = ({
             className="w-5 h-5 rounded-full border-2 border-white shadow-md"
             style={{ backgroundColor: TRANSITION_COLOR }}
           />
-          <span className="text-sm font-semibold text-purple-300">
+          <span className="text-sm font-semibold text-gray-200">
             Transitioning State
           </span>
         </div>
