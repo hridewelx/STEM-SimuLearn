@@ -19,7 +19,13 @@ class AIService {
   }
 
   // System prompts for different categories
-  getSystemPrompt(category) {
+  getSystemPrompt(category, language = "en") {
+    let languageInstruction = "";
+    if (language === "bn") {
+      languageInstruction =
+        "\n\nIMPORTANT: You must respond in Bengali (Bangla) language. Use clear and natural Bangla translations for scientific terms where appropriate, or keep standard English terms in parentheses if needed.";
+    }
+
     const basePrompt = `You are an enthusiastic and knowledgeable STEM tutor helping students understand interactive science simulations.
 
 Your teaching style:
@@ -88,7 +94,7 @@ You're teaching mathematics concepts:
 Show step-by-step solutions and visualize concepts.`,
     };
 
-    return categoryPrompts[category] || basePrompt;
+    return (categoryPrompts[category] || basePrompt) + languageInstruction;
   }
 
   // Build context from simulation state
@@ -112,7 +118,10 @@ Tags: ${metadata?.tags?.join(", ") || "N/A"}
   // Main chat function
   async chat(messages, simulationData) {
     try {
-      const systemPrompt = this.getSystemPrompt(simulationData.category);
+      const systemPrompt = this.getSystemPrompt(
+        simulationData.category,
+        simulationData.language
+      );
       const contextInfo = this.buildContext(simulationData);
 
       // Prepare chat history - filter out system messages and ensure proper format
@@ -168,6 +177,11 @@ Tags: ${metadata?.tags?.join(", ") || "N/A"}
   // Generate suggested questions based on simulation
   async generateSuggestions(simulationData) {
     try {
+      const languageInstruction =
+        simulationData.language === "bn"
+          ? "Return the questions in Bengali (Bangla) language."
+          : "";
+
       const prompt = `Based on this simulation, suggest 4 short, curious questions a student might ask:
 
 Simulation: ${simulationData.metadata?.name}
@@ -176,7 +190,8 @@ Topics: ${simulationData.metadata?.tags?.join(", ")}
 
 Format: Return ONLY 4 questions, one per line, no numbering or bullets.
 Keep each question under 10 words.
-Make them specific to the simulation.`;
+Make them specific to the simulation.
+${languageInstruction}`;
 
       const result = await this.model.generateContent(prompt);
       const suggestions = result.response

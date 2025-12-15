@@ -108,7 +108,11 @@
     },
     "status": {
       "running": "Running",
-      "ready": "Ready"
+      "ready": "Ready",
+      "reacting": "Reacting",
+      "mixing": "Mixing reactants",
+      "pouring": "Pouring {{item}}",
+      "complete": "Reaction Complete!"
     },
     "panels": {
       "controls": "Controls",
@@ -119,7 +123,12 @@
     "canvas": {
       "visualLab": "Visual Chemistry Lab",
       "molecularSim": "Molecular Simulation",
-      "progress": "Progress"
+      "progress": "Progress",
+      "reactionBeaker": "Reaction Beaker",
+      "pressStart": "Press Start to begin reaction",
+      "empty": "Empty",
+      "heatReleased": "Heat Released (Exothermic)",
+      "heatAbsorbed": "Heat Absorbed (Endothermic)"
     },
     "controls": {
       "reactionType": "Reaction Type",
@@ -131,7 +140,15 @@
       "acid": "Acid",
       "base": "Base",
       "selectAcid": "Select Acid",
-      "selectBase": "Select Base"
+      "selectBase": "Select Base",
+      "quantities": "Quantities (grams)",
+      "reactant1": "Reactant 1",
+      "reactant2": "Reactant 2",
+      "temperature": "Temperature",
+      "reactionSpeed": "Reaction Speed",
+      "selectReactantsPrompt": "Select reactants to see equation",
+      "cold": "Cold",
+      "hot": "Hot"
     },
     "analytics": {
       "balancedEquation": "Balanced Equation",
@@ -145,7 +162,8 @@
       "stoichiometricRate": "Stoichiometric Rate",
       "yieldAnalysis": "Yield Analysis",
       "theoreticalYield": "Theoretical Yield",
-      "percentYield": "Percent Yield"
+      "percentYield": "Percent Yield",
+      "actualYield": "Actual Yield"
     },
     "actions": {
       "start": "Start",

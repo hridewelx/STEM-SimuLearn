@@ -218,7 +218,7 @@ const ReactionLabAnalytics = ({ analytics }: ReactionLabAnalyticsProps) => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-400">
-              {t("reactionLab.analytics.actualYield") || "Actual Yield"}
+              {t("reactionLab.analytics.actualYield")}
             </span>
             <span className="text-sm font-mono text-emerald-300">
               {analytics.actualYield.toFixed(2)} g

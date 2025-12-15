@@ -443,6 +443,36 @@ const LeChatelierCanvas = ({
     const Q = calculateQ(reactants.length, products.length);
     const shift = getShiftDirection(Q, K); // Uses params.pressure internally
 
+    // Calculate dynamic reaction rates based on Q vs K relationship
+    // When Q < K: forward should dominate (system shifts right)
+    // When Q > K: reverse should dominate (system shifts left)
+    // When Q ≈ K: rates should be equal (equilibrium)
+
+    const baseRate = 0.03 * (params.temperature / 300); // Temperature effect
+    let forwardRate: number;
+    let reverseRate: number;
+
+    if (Q < K_effective) {
+      // Q < K means too many reactants, need forward reaction
+      // The ratio K/Q indicates how far from equilibrium
+      const ratio = Math.min(5, K_effective / Math.max(0.01, Q));
+      forwardRate = baseRate * (1 + Math.log(ratio));
+      reverseRate = baseRate / (1 + Math.log(ratio) * 0.5);
+    } else if (Q > K_effective) {
+      // Q > K means too many products, need reverse reaction
+      const ratio = Math.min(5, Q / Math.max(0.01, K_effective));
+      reverseRate = baseRate * (1 + Math.log(ratio));
+      forwardRate = baseRate / (1 + Math.log(ratio) * 0.5);
+    } else {
+      // At equilibrium
+      forwardRate = baseRate;
+      reverseRate = baseRate;
+    }
+
+    // Cap rates between 0.5% and 15% for display
+    forwardRate = Math.max(0.005, Math.min(0.15, forwardRate));
+    reverseRate = Math.max(0.005, Math.min(0.15, reverseRate));
+
     const analytics: LeChatelierAnalyticsData = {
       reactantCount: reactants.length,
       productCount: products.length,
@@ -450,8 +480,8 @@ const LeChatelierCanvas = ({
       equilibriumConstant: K_effective, // Displaying effective K so the Q comparison works
       reactionQuotient: Q,
       shiftDirection: shift,
-      forwardReactionRate: shift === "forward" ? 0.05 : 0.02,
-      reverseReactionRate: shift === "reverse" ? 0.05 : 0.02,
+      forwardReactionRate: forwardRate,
+      reverseReactionRate: reverseRate,
       temperature: params.temperature,
       pressure: params.pressure,
       percentReactants: (reactants.length / particles.length) * 100,

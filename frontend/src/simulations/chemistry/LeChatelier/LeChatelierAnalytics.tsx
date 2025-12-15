@@ -88,22 +88,22 @@ const LeChatelierAnalytics = ({ analytics }: LeChatelierAnalyticsProps) => {
           {t("leChatelier.analytics.equilibriumAnalysis")}
         </h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
-            <p className="text-xs text-cyan-600 mb-1">
+          <div className="text-center p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 min-w-0">
+            <p className="text-xs text-cyan-600 mb-1 truncate">
               {t("leChatelier.analytics.reactionQuotient")}
             </p>
-            <p className="text-xl font-bold text-white">
+            <p className="text-lg font-bold text-white">
               Q ={" "}
               {analytics.reactionQuotient === Infinity
                 ? "∞"
                 : analytics.reactionQuotient.toFixed(2)}
             </p>
           </div>
-          <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
-            <p className="text-xs text-purple-600 mb-1">
+          <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-500/30 min-w-0">
+            <p className="text-xs text-purple-600 mb-1 truncate">
               {t("leChatelier.analytics.equilibriumQuotient")}
             </p>
-            <p className="text-xl font-bold text-white">
+            <p className="text-lg font-bold text-white">
               K = {analytics.equilibriumConstant.toFixed(2)}
             </p>
           </div>

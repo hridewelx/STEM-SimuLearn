@@ -16,6 +16,7 @@ import aiTutorService, {
   AIMessage,
   SimulationData,
 } from "../services/aiTutorService";
+import { useTranslation } from "react-i18next";
 
 interface AITutorPanelProps {
   simulationData: SimulationData;
@@ -28,6 +29,7 @@ const AITutorPanel = ({
   simulationData,
   className = "",
 }: AITutorPanelProps) => {
+  const { i18n } = useTranslation();
   const [mode, setMode] = useState<DisplayMode>("minimized");
   const [messages, setMessages] = useState<AIMessage[]>([
     {
@@ -40,9 +42,14 @@ const AITutorPanel = ({
   const [isLoading, setIsLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(null);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<
+    number | null
+  >(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [speechSupported, setSpeechSupported] = useState<{ supported: boolean; voicesAvailable: boolean } | null>(null);
+  const [speechSupported, setSpeechSupported] = useState<{
+    supported: boolean;
+    voicesAvailable: boolean;
+  } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +59,7 @@ const AITutorPanel = ({
     const checkSupport = async () => {
       const support = await aiTutorService.checkSpeechSupport();
       setSpeechSupported(support);
-      console.log('🔊 Speech support:', support);
+      console.log("🔊 Speech support:", support);
     };
     checkSupport();
   }, []);
@@ -68,7 +75,10 @@ const AITutorPanel = ({
   }, [messages]);
 
   const loadSuggestions = async () => {
-    const sug = await aiTutorService.getSuggestions(simulationData);
+    const sug = await aiTutorService.getSuggestions({
+      ...simulationData,
+      language: i18n.language,
+    });
     setSuggestions(sug);
   };
 
@@ -88,7 +98,7 @@ const AITutorPanel = ({
     try {
       const response = await aiTutorService.sendMessage(
         [...messages, userMessage],
-        simulationData
+        { ...simulationData, language: i18n.language }
       );
 
       const assistantMessage: AIMessage = {
@@ -117,7 +127,7 @@ const AITutorPanel = ({
 
   const speakMessage = async (text: string, messageIndex?: number) => {
     if (!speechSupported?.voicesAvailable) {
-      console.log('🔇 Voice not available, skipping speech');
+      console.log("🔇 Voice not available, skipping speech");
       return;
     }
 
@@ -126,14 +136,14 @@ const AITutorPanel = ({
       if (messageIndex !== undefined) {
         setSpeakingMessageIndex(messageIndex);
       }
-      
+
       await aiTutorService.speak(text, () => {
-        console.log('✅ Speech ended callback');
+        console.log("✅ Speech ended callback");
         setIsSpeaking(false);
         setSpeakingMessageIndex(null);
       });
     } catch (error) {
-      console.error('Speech failed:', error);
+      console.error("Speech failed:", error);
       setIsSpeaking(false);
       setSpeakingMessageIndex(null);
     }
@@ -190,11 +200,15 @@ const AITutorPanel = ({
             disabled={!speechSupported?.supported}
             className={`p-2 rounded-lg transition-all ${
               voiceEnabled ? "bg-white/30" : "hover:bg-white/20"
-            } ${!speechSupported?.supported ? "opacity-50 cursor-not-allowed" : ""}`}
+            } ${
+              !speechSupported?.supported ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             title={
-              !speechSupported?.supported 
-                ? "Voice not supported in this browser" 
-                : voiceEnabled ? "Disable voice" : "Enable voice"
+              !speechSupported?.supported
+                ? "Voice not supported in this browser"
+                : voiceEnabled
+                ? "Disable voice"
+                : "Enable voice"
             }
           >
             {voiceEnabled ? (
@@ -232,7 +246,9 @@ const AITutorPanel = ({
       {speechSupported && !speechSupported.voicesAvailable && voiceEnabled && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 text-sm flex items-center gap-2">
           <AlertCircle className="w-4 h-4" />
-          <span>Voice not available in this browser. Using text-only mode.</span>
+          <span>
+            Voice not available in this browser. Using text-only mode.
+          </span>
         </div>
       )}
 
@@ -260,7 +276,7 @@ const AITutorPanel = ({
                   </span>
                 </div>
               )}
-              
+
               {/* Render markdown for assistant messages */}
               {msg.role === "assistant" ? (
                 <div className="text-sm leading-relaxed prose prose-sm max-w-none dark:prose-invert prose-p:my-2 prose-strong:text-purple-600 dark:prose-strong:text-purple-400 prose-em:text-gray-700 dark:prose-em:text-gray-300">
@@ -271,7 +287,7 @@ const AITutorPanel = ({
                   {msg.content}
                 </p>
               )}
-              
+
               {msg.role === "assistant" && speechSupported?.voicesAvailable && (
                 <button
                   onClick={() => speakMessage(msg.content, index)}

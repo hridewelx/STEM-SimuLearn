@@ -318,12 +318,14 @@ const ReactionLabControls = ({
       {/* Quantity Controls */}
       <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
         <h3 className="text-sm font-semibold text-purple-600 mb-3">
-          Quantities (grams)
+          {t("reactionLab.controls.quantities")}
         </h3>
         <div className="space-y-3">
           <div>
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-gray-400">Reactant 1</span>
+              <span className="text-gray-400">
+                {t("reactionLab.controls.reactant1")}
+              </span>
               <span className="text-purple-300 font-mono">
                 {params.reactant1Amount} g
               </span>
@@ -342,7 +344,9 @@ const ReactionLabControls = ({
           {params.reactionType !== "decomposition" && (
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-gray-400">Reactant 2</span>
+                <span className="text-gray-400">
+                  {t("reactionLab.controls.reactant2")}
+                </span>
                 <span className="text-purple-300 font-mono">
                   {params.reactant2Amount} g
                 </span>
@@ -365,10 +369,12 @@ const ReactionLabControls = ({
       {/* Temperature Control */}
       <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
         <h3 className="text-sm font-semibold text-orange-600 mb-3">
-          Temperature
+          {t("reactionLab.controls.temperature")}
         </h3>
         <div className="flex justify-between text-xs mb-1">
-          <span className="text-gray-400">Reaction Speed</span>
+          <span className="text-gray-400">
+            {t("reactionLab.controls.reactionSpeed")}
+          </span>
           <span className="text-orange-300 font-mono">
             {params.temperature}°C
           </span>
@@ -384,8 +390,8 @@ const ReactionLabControls = ({
           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
         />
         <div className="flex justify-between text-xs text-gray-400 mt-1">
-          <span>Cold</span>
-          <span>Hot</span>
+          <span>{t("reactionLab.controls.cold")}</span>
+          <span>{t("reactionLab.controls.hot")}</span>
         </div>
       </div>
 
@@ -484,7 +490,8 @@ const ReactionLabControls = ({
               ) : (
                 <>
                   <div className="font-mono text-xs mt-1 text-gray-400 break-all">
-                    {reaction.equation || "Select reactants to see equation"}
+                    {reaction.equation ||
+                      t("reactionLab.controls.selectReactantsPrompt")}
                   </div>
                   {reaction.errorMessage && (
                     <p className="text-xs text-rose-600 mt-2">

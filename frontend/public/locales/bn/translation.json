@@ -72,17 +72,17 @@
     "controls": {
       "title": "সিমুলেশন নিয়ন্ত্রণ",
       "particle_count": "কণার সংখ্যা",
-      "blue": "নীল",
-      "red": "লাল",
+      "blue": "নীল কণা",
+      "red": "লাল কণা",
       "mass": "ভর (AMU)",
-      "blue_mass": "নীল ভর",
-      "red_mass": "লাল ভর",
+      "blue_mass": "নীল কণার ভর",
+      "red_mass": "লাল কণার ভর",
       "radius": "ব্যাসার্ধ (pm)",
-      "blue_radius": "নীল ব্যাসার্ধ",
-      "red_radius": "লাল ব্যাসার্ধ",
+      "blue_radius": "নীল কণার ব্যাসার্ধ",
+      "red_radius": "লাল কণার ব্যাসার্ধ",
       "temperature": "প্রাথমিক তাপমাত্রা (K)",
-      "left_temp": "বাম তাপমাত্রা",
-      "right_temp": "ডান তাপমাত্রা",
+      "left_temp": "বাম চেম্বারের তাপমাত্রা",
+      "right_temp": "ডান চেম্বারের তাপমাত্রা",
       "remove_divider": "বিভাজক সরান",
       "scale": "স্কেল",
       "speed": {
@@ -105,7 +105,11 @@
     },
     "status": {
       "running": "চলছে",
-      "ready": "প্রস্তুত"
+      "ready": "প্রস্তুত",
+      "reacting": "বিক্রিয়া চলছে",
+      "mixing": "মিশ্রিত হচ্ছে",
+      "pouring": "{{item}} ঢালা হচ্ছে",
+      "complete": "বিক্রিয়া সম্পন্ন!"
     },
     "panels": {
       "controls": "নিয়ন্ত্রণ",
@@ -116,11 +120,16 @@
     "canvas": {
       "visualLab": "ভিজ্যুয়াল রসায়ন ল্যাব",
       "molecularSim": "আণবিক সিমুলেশন",
-      "progress": "অগ্রগতি"
+      "progress": "অগ্রগতি",
+      "reactionBeaker": "বিক্রিয়া বিকার",
+      "pressStart": "বিক্রিয়া শুরু করার জন্য স্টার্ট টিপুন",
+      "empty": "নির্বাচন করা হয়নি",
+      "heatReleased": "তাপ নির্গত হচ্ছে (তাপোৎপাদী)",
+      "heatAbsorbed": "তাপ শোষিত হচ্ছে (তাপহারী)"
     },
     "controls": {
       "reactionType": "বিক্রিয়ার ধরন",
-      "composition": "সংযুক্তি",
+      "composition": "সংযোজন",
       "decomposition": "বিয়োজন",
       "acidBase": "অ্যাসিড-বেস",
       "singleReplacement": "একক প্রতিস্থাপন",
@@ -128,11 +137,19 @@
       "acid": "অ্যাসিড",
       "base": "বেস",
       "selectAcid": "অ্যাসিড নির্বাচন করুন",
-      "selectBase": "বেস নির্বাচন করুন"
+      "selectBase": "বেস নির্বাচন করুন",
+      "quantities": "পরিমাণ (গ্রাম)",
+      "reactant1": "বিক্রিয়ক ১",
+      "reactant2": "বিক্রিয়ক ২",
+      "temperature": "তাপমাত্রা",
+      "reactionSpeed": "বিক্রিয়ার গতি",
+      "selectReactantsPrompt": "সমীকরণ দেখতে বিক্রিয়ক নির্বাচন করুন",
+      "cold": "ঠান্ডা",
+      "hot": "গরম"
     },
     "analytics": {
       "balancedEquation": "সুষম সমীকরণ",
-      "selectValid": "বৈধ বিক্রিয়ক নির্বাচন করুন",
+      "selectValid": "প্রথমে বিক্রিয়ক নির্বাচন করুন",
       "reactionProgress": "বিক্রিয়ার অগ্রগতি",
       "reactionRate": "বিক্রিয়ার হার",
       "productsFormed": "উৎপন্ন পণ্য",
@@ -142,7 +159,8 @@
       "stoichiometricRate": "স্টয়কিওমেট্রিক অনুপাত",
       "yieldAnalysis": "ফলন বিশ্লেষণ",
       "theoreticalYield": "তাত্ত্বিক ফলন",
-      "percentYield": "শতাংশ ফলন"
+      "percentYield": "শতাংশ ফলন",
+      "actualYield": "প্রকৃত ফলন"
     },
     "actions": {
       "start": "শুরু",

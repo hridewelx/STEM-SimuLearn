@@ -9,6 +9,7 @@ export interface AIMessage {
 export interface SimulationData {
   simulationId: string;
   category: string;
+  language?: string;
   state: Record<string, any>;
   metadata?: {
     name?: string;
